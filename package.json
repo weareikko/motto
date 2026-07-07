@@ -1,0 +1,48 @@
+{
+  "name": "eslint-plugin-motto",
+  "version": "0.1.0",
+  "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
+  "type": "module",
+  "license": "MIT",
+  "author": "ikko-dev",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "oxlint",
+    "claude",
+    "claude-code",
+    "skills",
+    "skill",
+    "markdown"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "files": [
+    "src",
+    "configs",
+    "docs",
+    "README.md",
+    "PORTABILITY.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "lint": "eslint \"**/SKILL.md\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "dependencies": {
+    "@eslint/markdown": "^7.0.0",
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

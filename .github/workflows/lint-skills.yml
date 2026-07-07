@@ -1,0 +1,26 @@
+name: Lint skills
+
+on:
+  push:
+    paths:
+      - "**/SKILL.md"
+      - "eslint.config.*"
+      - ".github/workflows/lint-skills.yml"
+  pull_request:
+    paths:
+      - "**/SKILL.md"
+      - "eslint.config.*"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Fails the job on any error-severity finding. Add `--max-warnings 0`
+      # to also fail on quality warnings, or point at the `strict` preset.
+      - run: npx eslint "**/SKILL.md"
