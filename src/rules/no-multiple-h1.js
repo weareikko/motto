@@ -17,7 +17,7 @@ export default {
 		docs: {
 			description: "Disallow more than one top-level H1 in the skill body",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/no-multiple-h1.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-multiple-h1.md",
 		},
 		schema: [],
 		messages: {

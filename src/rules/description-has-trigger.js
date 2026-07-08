@@ -32,7 +32,7 @@ export default {
 			description:
 				"Require the `description` to express when the skill applies",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/description-has-trigger.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/description-has-trigger.md",
 		},
 		schema: [
 			{

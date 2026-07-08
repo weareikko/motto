@@ -1,4 +1,4 @@
-# motto/name-kebab-case
+# skill/name-kebab-case
 
 Require the skill `name` to be letter-start kebab-case, matching `^[a-z][a-z0-9]*(-[a-z0-9]+)*$`.
 

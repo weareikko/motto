@@ -15,7 +15,7 @@ export default {
 		docs: {
 			description: "Require the skill `name` to be letter-start kebab-case",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/name-kebab-case.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/name-kebab-case.md",
 		},
 		schema: [],
 		messages: {

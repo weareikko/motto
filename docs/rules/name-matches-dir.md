@@ -1,4 +1,4 @@
-# motto/name-matches-dir
+# skill/name-matches-dir
 
 Require the skill `name` to equal the name of the directory that contains its `SKILL.md`.
 

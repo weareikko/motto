@@ -1,4 +1,4 @@
-# motto/h1-matches-name
+# skill/h1-matches-name
 
 Require the body H1 to correspond to the skill `name`.
 
@@ -7,7 +7,7 @@ Require the body H1 to correspond to the skill `name`.
 The title a reader sees should match the skill's identity. The comparison is normalized — lowercased, with runs of non-alphanumeric characters treated as spaces — so both `# my-skill` and `# My Skill` satisfy `name: my-skill`. Enable it explicitly:
 
 ```js
-"motto/h1-matches-name": "warn"
+"skill/h1-matches-name": "warn"
 ```
 
 ## Fails

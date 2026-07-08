@@ -6,18 +6,18 @@
 //
 // The `recommended` preset already targets `**​/SKILL.md`, loads the markdown
 // language with YAML frontmatter, and enables the rule set. Swap it for
-// `motto.configs.strict` to fail CI on quality warnings too.
+// `skill.configs.strict` to fail CI on quality warnings too.
 
-import motto from "eslint-plugin-motto";
+import skill from "eslint-plugin-skill";
 
 export default [
-	motto.configs.recommended,
+	skill.configs.recommended,
 
 	// Example override: raise a cap or silence a rule for your house style.
 	// {
 	// 	files: ["**/SKILL.md"],
 	// 	rules: {
-	// 		"motto/body-max-length": ["warn", { maxLines: 400 }],
+	// 		"skill/body-max-length": ["warn", { maxLines: 400 }],
 	// 	},
 	// },
 ];

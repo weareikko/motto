@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-motto",
+  "name": "eslint-plugin-skill",
   "version": "0.1.0",
   "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
   "type": "module",

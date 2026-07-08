@@ -1,5 +1,5 @@
 /**
- * eslint-plugin-motto — lint Claude Code Agent Skills (`SKILL.md`).
+ * eslint-plugin-skill — lint Claude Code Agent Skills (`SKILL.md`).
  *
  * The plugin exposes a set of rules plus two ready-to-use flat configs. Each
  * config is self-contained: it targets `**​/SKILL.md`, wires up the
@@ -24,7 +24,7 @@ const version = "0.1.0";
 /** @type {import("eslint").ESLint.Plugin} */
 const plugin = {
 	meta: {
-		name: "eslint-plugin-motto",
+		name: "eslint-plugin-skill",
 		version,
 	},
 	rules: {
@@ -46,15 +46,15 @@ const plugin = {
  * that shouldn't necessarily fail CI; `strict` promotes them to `error`.
  */
 const RECOMMENDED_RULES = {
-	"motto/require-frontmatter": "error",
-	"motto/name-kebab-case": "error",
-	"motto/name-matches-dir": "error",
-	"motto/description-length": "error",
-	"motto/description-no-html": "error",
-	"motto/no-multiple-h1": "error",
-	"motto/no-broken-relative-links": "error",
-	"motto/description-has-trigger": "warn",
-	"motto/body-max-length": "warn",
+	"skill/require-frontmatter": "error",
+	"skill/name-kebab-case": "error",
+	"skill/name-matches-dir": "error",
+	"skill/description-length": "error",
+	"skill/description-no-html": "error",
+	"skill/no-multiple-h1": "error",
+	"skill/no-broken-relative-links": "error",
+	"skill/description-has-trigger": "warn",
+	"skill/body-max-length": "warn",
 	// `h1-matches-name` is intentionally omitted: the standard skill format does
 	// not require an H1, and the frontmatter `name` is a display label, not the
 	// body title. Teams that adopt the "H1 mirrors name" convention can opt in.
@@ -73,7 +73,7 @@ function makeConfig(name, rules) {
 	return {
 		name,
 		files: ["**/SKILL.md"],
-		plugins: { markdown, motto: plugin },
+		plugins: { markdown, skill: plugin },
 		language: "markdown/gfm",
 		languageOptions: { frontmatter: "yaml" },
 		rules,
@@ -81,8 +81,8 @@ function makeConfig(name, rules) {
 }
 
 plugin.configs = {
-	recommended: makeConfig("motto/recommended", RECOMMENDED_RULES),
-	strict: makeConfig("motto/strict", STRICT_RULES),
+	recommended: makeConfig("skill/recommended", RECOMMENDED_RULES),
+	strict: makeConfig("skill/strict", STRICT_RULES),
 };
 
 export default plugin;

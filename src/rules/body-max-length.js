@@ -19,7 +19,7 @@ export default {
 			description:
 				"Keep the skill body short to preserve progressive disclosure",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/body-max-length.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/body-max-length.md",
 		},
 		schema: [
 			{

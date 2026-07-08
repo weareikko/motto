@@ -58,7 +58,7 @@ export default {
 			description:
 				"Flag relative links/images whose target does not exist on disk",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/no-broken-relative-links.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-broken-relative-links.md",
 		},
 		schema: [],
 		messages: {

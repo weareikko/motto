@@ -14,7 +14,7 @@ export default {
 			description:
 				"Require the skill `name` to match its containing directory",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/name-matches-dir.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/name-matches-dir.md",
 		},
 		schema: [],
 		messages: {

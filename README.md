@@ -1,10 +1,10 @@
-# eslint-plugin-motto
+# eslint-plugin-skill
 
 An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) (`SKILL.md` files) for quality, so their quality holds up as you write more of them and they evolve.
 
 It is built on [`@eslint/markdown`](https://github.com/eslint/markdown) and authored to port cleanly to [oxlint](https://oxc.rs/docs/guide/usage/linter) once oxlint ships markdown support — see [PORTABILITY.md](./PORTABILITY.md).
 
-Named after and inspired by [jeremiewerner/motto](https://github.com/jeremiewerner/motto) — but this is a linter, not a framework, it targets the standard `SKILL.md` format, and no rule is ported verbatim.
+Inspired by [jeremiewerner/motto](https://github.com/jeremiewerner/motto) — but this is a linter, not a framework, it targets the standard `SKILL.md` format, and no rule is ported verbatim.
 
 ## What it checks
 
@@ -35,7 +35,7 @@ Not enabled by any preset — the standard skill format does not require an H1, 
 ## Install
 
 ```sh
-npm install --save-dev eslint eslint-plugin-motto
+npm install --save-dev eslint eslint-plugin-skill
 ```
 
 ## Usage
@@ -43,9 +43,9 @@ npm install --save-dev eslint eslint-plugin-motto
 Add a flat config at the root of your skills repo (`eslint.config.js`):
 
 ```js
-import motto from "eslint-plugin-motto";
+import skill from "eslint-plugin-skill";
 
-export default [motto.configs.recommended];
+export default [skill.configs.recommended];
 ```
 
 The preset already globs `**/SKILL.md`, loads the markdown language with YAML frontmatter, and enables the rules. Then:
@@ -61,16 +61,16 @@ A ready-to-copy config lives in [`configs/eslint.config.example.js`](configs/esl
 Rules with options can be tuned:
 
 ```js
-import motto from "eslint-plugin-motto";
+import skill from "eslint-plugin-skill";
 
 export default [
-  motto.configs.recommended,
+  skill.configs.recommended,
   {
     files: ["**/SKILL.md"],
     rules: {
-      "motto/description-length": ["error", { max: 800 }],
-      "motto/body-max-length": ["warn", { maxLines: 400 }],
-      "motto/description-has-trigger": [
+      "skill/description-length": ["error", { max: 800 }],
+      "skill/body-max-length": ["warn", { maxLines: 400 }],
+      "skill/description-has-trigger": [
         "warn",
         { patterns: ["use when", "trigger", "when the user"] },
       ],

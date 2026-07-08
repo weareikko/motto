@@ -1,4 +1,4 @@
-# motto/body-max-length
+# skill/body-max-length
 
 Keep the skill body short to preserve progressive disclosure.
 
@@ -19,5 +19,5 @@ A concise body that links out to references for detail.
 | `maxLines` | integer ≥ 1 | `500` | Maximum body lines, excluding frontmatter. |
 
 ```js
-"motto/body-max-length": ["warn", { maxLines: 400 }]
+"skill/body-max-length": ["warn", { maxLines: 400 }]
 ```

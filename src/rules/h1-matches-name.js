@@ -29,7 +29,7 @@ export default {
 			// requires an H1 nor ties it to `name` (which is a display label).
 			description: "Require the body H1 to correspond to the skill `name`",
 			recommended: false,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/h1-matches-name.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/h1-matches-name.md",
 		},
 		schema: [],
 		messages: {

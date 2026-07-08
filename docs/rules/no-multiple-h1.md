@@ -1,4 +1,4 @@
-# motto/no-multiple-h1
+# skill/no-multiple-h1
 
 Disallow more than one top-level `#` H1 in the skill body.
 

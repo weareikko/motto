@@ -1,4 +1,4 @@
-# motto/description-length
+# skill/description-length
 
 Cap the length of the skill `description`.
 
@@ -23,5 +23,5 @@ description: Formats code. Use when the user asks to format a file.
 | `max` | integer ≥ 1 | `1024` | Maximum allowed character count. |
 
 ```js
-"motto/description-length": ["error", { max: 800 }]
+"skill/description-length": ["error", { max: 800 }]
 ```

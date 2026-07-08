@@ -1,4 +1,4 @@
-# motto/description-no-html
+# skill/description-no-html
 
 Disallow HTML/XML tags in the skill `description`.
 

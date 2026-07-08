@@ -1,4 +1,4 @@
-# motto/description-has-trigger
+# skill/description-has-trigger
 
 Require the `description` to express *when* the skill applies, not just what it is.
 
@@ -24,5 +24,5 @@ description: Runs the deploy. Trigger on deploy requests.
 | `patterns` | string[] | `["use when", "use this when", "use for", "used when", "used for", "when the user", "when you", "when asked", "trigger", "invoke", "for when"]` | Case-insensitive substrings; the description must contain at least one. |
 
 ```js
-"motto/description-has-trigger": ["warn", { patterns: ["use when", "trigger"] }]
+"skill/description-has-trigger": ["warn", { patterns: ["use when", "trigger"] }]
 ```

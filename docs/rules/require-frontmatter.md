@@ -1,4 +1,4 @@
-# motto/require-frontmatter
+# skill/require-frontmatter
 
 Require every `SKILL.md` to begin with YAML frontmatter that defines a non-empty `name` and `description`.
 

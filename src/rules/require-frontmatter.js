@@ -16,7 +16,7 @@ export default {
 			description:
 				"Require `name` and `description` frontmatter on a skill",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/require-frontmatter.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/require-frontmatter.md",
 		},
 		schema: [],
 		messages: {

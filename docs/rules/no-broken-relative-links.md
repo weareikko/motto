@@ -1,4 +1,4 @@
-# motto/no-broken-relative-links
+# skill/no-broken-relative-links
 
 Flag relative links and images in the body whose target does not exist on disk, relative to the skill's directory.
 

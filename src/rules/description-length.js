@@ -19,7 +19,7 @@ export default {
 		docs: {
 			description: "Cap the length of the skill `description`",
 			recommended: true,
-			url: "https://github.com/ikko-dev/motto/blob/main/docs/rules/description-length.md",
+			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/description-length.md",
 		},
 		schema: [
 			{
