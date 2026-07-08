@@ -7,29 +7,15 @@
  * rename that broke the link, or a missing pointer.
  */
 
-import { existsSync, readdirSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 
 import type { MarkdownRuleDefinition } from "@eslint/markdown";
 
 import { isSkillFile } from "../utils/skill-file";
 import { collectLinkTargets, isRelativeUrl, urlToPath } from "../utils/links";
+import { referenceMarkdownFiles } from "../utils/references";
 
 const TOP = { start: { line: 1, column: 1 }, end: { line: 1, column: 1 } };
-
-/** Recursively list `.md` files under a directory, as absolute paths. */
-function markdownFiles(dir: string): string[] {
-	const out: string[] = [];
-	for (const entry of readdirSync(dir, { withFileTypes: true })) {
-		const full = join(dir, entry.name);
-		if (entry.isDirectory()) {
-			out.push(...markdownFiles(full));
-		} else if (entry.isFile() && entry.name.endsWith(".md")) {
-			out.push(full);
-		}
-	}
-	return out;
-}
 
 const rule: MarkdownRuleDefinition<{
 	RuleOptions: [];
@@ -54,13 +40,8 @@ const rule: MarkdownRuleDefinition<{
 			return {};
 		}
 		const skillDir = dirname(context.filename);
-		const referencesDir = join(skillDir, "references");
-		if (
-			!skillDir ||
-			skillDir === "." ||
-			context.filename === "<input>" ||
-			!existsSync(referencesDir)
-		) {
+		const files = referenceMarkdownFiles(skillDir);
+		if (!skillDir || skillDir === "." || context.filename === "<input>" || files.length === 0) {
 			return {};
 		}
 
@@ -72,7 +53,7 @@ const rule: MarkdownRuleDefinition<{
 						.map(({ url }) => resolve(skillDir, urlToPath(url))),
 				);
 
-				for (const file of markdownFiles(referencesDir)) {
+				for (const file of files) {
 					if (!linked.has(file)) {
 						context.report({
 							loc: TOP,
