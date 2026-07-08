@@ -26,5 +26,15 @@ ruleTester.run("name-kebab-case", rule, {
 			code: skill({ name: "trailing-", description: "x" }),
 			errors: [{ messageId: "notKebab" }],
 		},
+		{
+			filename: F,
+			code: skill({ name: `${"a".repeat(65)}`, description: "x" }),
+			errors: [{ messageId: "tooLong", data: { max: 64, length: 65 } }],
+		},
+		{
+			filename: F,
+			code: skill({ name: "claude-helper", description: "x" }),
+			errors: [{ messageId: "reservedWord", data: { word: "claude" } }],
+		},
 	],
 });

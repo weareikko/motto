@@ -9,15 +9,19 @@ import { parseFrontmatter } from "../utils/frontmatter";
 import { findFrontmatter } from "../utils/ast";
 
 const KEBAB = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
+const MAX_LENGTH = 64;
+// The Agent Skills spec forbids names built from reserved words.
+const RESERVED = ["anthropic", "claude"];
 
 const rule: MarkdownRuleDefinition<{
 	RuleOptions: [];
-	MessageIds: "notKebab";
+	MessageIds: "notKebab" | "tooLong" | "reservedWord";
 }> = {
 	meta: {
 		type: "problem",
 		docs: {
-			description: "Require the skill `name` to be letter-start kebab-case",
+			description:
+				"Require the skill `name` to be a valid Agent Skills identifier",
 			recommended: true,
 			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/name-kebab-case.md",
 		},
@@ -25,6 +29,10 @@ const rule: MarkdownRuleDefinition<{
 		messages: {
 			notKebab:
 				"Skill `name` must be letter-start kebab-case (e.g. `my-skill`), got `{{name}}`.",
+			tooLong:
+				"Skill `name` must be at most {{max}} characters; got {{length}}.",
+			reservedWord:
+				"Skill `name` must not contain the reserved word `{{word}}`.",
 		},
 	},
 
@@ -43,11 +51,30 @@ const rule: MarkdownRuleDefinition<{
 				if (!data || typeof data.name !== "string" || data.name === "") {
 					return;
 				}
-				if (!KEBAB.test(data.name)) {
+				const name = data.name;
+				const loc = keyLoc("name");
+
+				if (!KEBAB.test(name)) {
 					context.report({
-						loc: keyLoc("name"),
+						loc,
 						messageId: "notKebab",
-						data: { name: data.name },
+						data: { name },
+					});
+				}
+				if (name.length > MAX_LENGTH) {
+					context.report({
+						loc,
+						messageId: "tooLong",
+						data: { max: MAX_LENGTH, length: name.length },
+					});
+				}
+				const lowered = name.toLowerCase();
+				const reserved = RESERVED.find((word) => lowered.includes(word));
+				if (reserved) {
+					context.report({
+						loc,
+						messageId: "reservedWord",
+						data: { word: reserved },
 					});
 				}
 			},
