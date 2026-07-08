@@ -1,5 +1,5 @@
-import rule from "../../src/rules/description-no-html.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/description-no-html";
+import { makeRuleTester, skill } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();
@@ -8,7 +8,9 @@ ruleTester.run("description-no-html", rule, {
 	valid: [
 		{
 			filename: F,
-			code: skill({ description: "Plain text. Use when needed. 3 < 5 is math." }),
+			code: skill({
+				description: "Plain text. Use when needed. 3 < 5 is math.",
+			}),
 		},
 	],
 	invalid: [

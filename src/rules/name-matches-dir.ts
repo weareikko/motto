@@ -2,12 +2,16 @@
  * @fileoverview Require the skill `name` to match its containing directory.
  */
 
-import { isSkillFile, dirName } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+import { isSkillFile, dirName } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter } from "../utils/ast";
+
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "mismatch";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -55,3 +59,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

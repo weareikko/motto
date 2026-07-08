@@ -2,14 +2,18 @@
  * @fileoverview Require the skill `name` to be letter-start kebab-case.
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+
+import { isSkillFile } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter } from "../utils/ast";
 
 const KEBAB = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "notKebab";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -50,3 +54,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

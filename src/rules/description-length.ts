@@ -6,14 +6,18 @@
  * 1024-character frontmatter budget.
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+
+import { isSkillFile } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter } from "../utils/ast";
 
 const DEFAULT_MAX = 1024;
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [{ max?: number }?];
+	MessageIds: "tooLong";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -40,7 +44,7 @@ export default {
 		if (!isSkillFile(context.filename)) {
 			return {};
 		}
-		const max = context.options?.[0]?.max ?? DEFAULT_MAX;
+		const max = context.options[0]?.max ?? DEFAULT_MAX;
 
 		return {
 			root(root) {
@@ -57,10 +61,12 @@ export default {
 					context.report({
 						loc: keyLoc("description"),
 						messageId: "tooLong",
-						data: { length: String(length), max: String(max) },
+						data: { length, max },
 					});
 				}
 			},
 		};
 	},
 };
+
+export default rule;

@@ -5,23 +5,24 @@
  * accepted for `name: my-skill`.
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter, collect, textContent } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+import type { Heading } from "mdast";
 
-/**
- * @param {string} value
- * @returns {string}
- */
-function normalize(value) {
+import { isSkillFile } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter, collect, textContent } from "../utils/ast";
+
+function normalize(value: string): string {
 	return value
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, " ")
 		.trim();
 }
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "mismatch";
+}> = {
 	meta: {
 		type: "suggestion",
 		docs: {
@@ -53,9 +54,11 @@ export default {
 				if (!data || typeof data.name !== "string" || data.name === "") {
 					return;
 				}
-				const h1 = collect(root, "heading").find(h => h.depth === 1);
-				if (!h1) {
-					return; // `single-h1` owns the missing-title case.
+				const h1 = collect<Heading>(root, "heading").find(
+					(h) => h.depth === 1,
+				);
+				if (!h1 || !h1.position) {
+					return; // `no-multiple-h1` owns the heading-structure cases.
 				}
 				const title = textContent(h1).trim();
 				if (normalize(title) !== normalize(data.name)) {
@@ -69,3 +72,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

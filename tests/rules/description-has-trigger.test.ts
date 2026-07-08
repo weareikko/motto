@@ -1,5 +1,5 @@
-import rule from "../../src/rules/description-has-trigger.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/description-has-trigger";
+import { makeRuleTester, skill } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();
@@ -14,7 +14,6 @@ ruleTester.run("description-has-trigger", rule, {
 			filename: F,
 			code: skill({ description: "Runs X. Trigger on deploy requests." }),
 		},
-		// Custom pattern set.
 		{
 			filename: F,
 			code: skill({ description: "Handles APPLY requests." }),

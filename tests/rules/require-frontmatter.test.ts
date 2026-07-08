@@ -1,5 +1,5 @@
-import rule from "../../src/rules/require-frontmatter.js";
-import { makeRuleTester } from "../setup.js";
+import rule from "../../src/rules/require-frontmatter";
+import { makeRuleTester } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();
@@ -10,11 +10,7 @@ ruleTester.run("require-frontmatter", rule, {
 			filename: F,
 			code: "---\nname: demo\ndescription: A thing. Use when needed.\n---\n\n# demo\n\nBody.\n",
 		},
-		// Not a skill file — rule stays silent.
-		{
-			filename: "notes.md",
-			code: "# just a doc\n",
-		},
+		{ filename: "notes.md", code: "# just a doc\n" },
 	],
 	invalid: [
 		{

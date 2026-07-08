@@ -1,5 +1,5 @@
-import rule from "../../src/rules/description-length.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/description-length";
+import { makeRuleTester, skill } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();
@@ -9,11 +9,7 @@ const long = "a".repeat(1025);
 ruleTester.run("description-length", rule, {
 	valid: [
 		{ filename: F, code: skill({ description: "short enough" }) },
-		{
-			filename: F,
-			code: skill({ description: "a".repeat(1024) }),
-		},
-		// Custom, larger cap.
+		{ filename: F, code: skill({ description: "a".repeat(1024) }) },
 		{
 			filename: F,
 			code: skill({ description: long }),
@@ -24,13 +20,13 @@ ruleTester.run("description-length", rule, {
 		{
 			filename: F,
 			code: skill({ description: long }),
-			errors: [{ messageId: "tooLong", data: { length: "1025", max: "1024" } }],
+			errors: [{ messageId: "tooLong", data: { length: 1025, max: 1024 } }],
 		},
 		{
 			filename: F,
 			code: skill({ description: "a".repeat(20) }),
 			options: [{ max: 10 }],
-			errors: [{ messageId: "tooLong", data: { length: "20", max: "10" } }],
+			errors: [{ messageId: "tooLong", data: { length: 20, max: 10 } }],
 		},
 	],
 });

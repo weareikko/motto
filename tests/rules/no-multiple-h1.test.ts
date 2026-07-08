@@ -1,5 +1,5 @@
-import rule from "../../src/rules/no-multiple-h1.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/no-multiple-h1";
+import { makeRuleTester, skill } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();
@@ -15,7 +15,7 @@ ruleTester.run("no-multiple-h1", rule, {
 		{
 			filename: F,
 			code: skill({ body: "# one\n\n# two\n" }),
-			errors: [{ messageId: "multiple", data: { count: "2" } }],
+			errors: [{ messageId: "multiple", data: { count: 2 } }],
 		},
 	],
 });

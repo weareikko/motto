@@ -1,5 +1,5 @@
-import rule from "../../src/rules/name-kebab-case.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/name-kebab-case";
+import { makeRuleTester, skill } from "../setup";
 
 const F = "skills/demo/SKILL.md";
 const ruleTester = makeRuleTester();

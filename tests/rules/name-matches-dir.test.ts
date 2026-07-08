@@ -1,5 +1,5 @@
-import rule from "../../src/rules/name-matches-dir.js";
-import { makeRuleTester, skill } from "../setup.js";
+import rule from "../../src/rules/name-matches-dir";
+import { makeRuleTester, skill } from "../setup";
 
 const ruleTester = makeRuleTester();
 
@@ -9,7 +9,6 @@ ruleTester.run("name-matches-dir", rule, {
 			filename: "skills/my-skill/SKILL.md",
 			code: skill({ name: "my-skill", description: "x" }),
 		},
-		// No resolvable directory (RuleTester default filename) — stays silent.
 		{
 			filename: "SKILL.md",
 			code: skill({ name: "anything", description: "x" }),

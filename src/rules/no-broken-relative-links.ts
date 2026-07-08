@@ -9,14 +9,13 @@
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { collect } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+import type { Image, Link } from "mdast";
 
-/**
- * @param {string} url
- * @returns {boolean}
- */
-function isRelative(url) {
+import { isSkillFile } from "../utils/skill-file";
+import { collect } from "../utils/ast";
+
+function isRelative(url: string): boolean {
 	if (!url || url.startsWith("#")) {
 		return false;
 	}
@@ -29,11 +28,8 @@ function isRelative(url) {
 
 /**
  * Strip URL fragment and query so the filesystem target can be resolved.
- *
- * @param {string} url
- * @returns {string}
  */
-function toPath(url) {
+function toPath(url: string): string {
 	let path = url;
 	const hash = path.indexOf("#");
 	if (hash !== -1) {
@@ -50,8 +46,10 @@ function toPath(url) {
 	}
 }
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "broken";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -79,19 +77,25 @@ export default {
 
 		return {
 			root(root) {
-				const nodes = [
-					...collect(root, "link").map(n => ({ n, kind: "link" })),
-					...collect(root, "image").map(n => ({ n, kind: "image" })),
+				const nodes: { node: Link | Image; kind: "link" | "image" }[] = [
+					...collect<Link>(root, "link").map((node) => ({
+						node,
+						kind: "link" as const,
+					})),
+					...collect<Image>(root, "image").map((node) => ({
+						node,
+						kind: "image" as const,
+					})),
 				];
-				for (const { n, kind } of nodes) {
-					const url = typeof n.url === "string" ? n.url : "";
-					if (!isRelative(url)) {
+				for (const { node, kind } of nodes) {
+					const url = typeof node.url === "string" ? node.url : "";
+					if (!isRelative(url) || !node.position) {
 						continue;
 					}
 					const target = resolve(baseDir, toPath(url));
 					if (!existsSync(target)) {
 						context.report({
-							loc: n.position,
+							loc: node.position,
 							messageId: "broken",
 							data: { kind, url },
 						});
@@ -101,3 +105,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

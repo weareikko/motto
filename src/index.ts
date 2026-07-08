@@ -1,5 +1,5 @@
 /**
- * eslint-plugin-skill — lint Claude Code Agent Skills (`SKILL.md`).
+ * @ikko-dev/eslint-plugin-skill — lint Claude Code Agent Skills (`SKILL.md`).
  *
  * The plugin exposes a set of rules plus two ready-to-use flat configs. Each
  * config is self-contained: it targets `**​/SKILL.md`, wires up the
@@ -7,25 +7,23 @@
  */
 
 import markdown from "@eslint/markdown";
+import type { ESLint, Linter } from "eslint";
 
-import requireFrontmatter from "./rules/require-frontmatter.js";
-import nameKebabCase from "./rules/name-kebab-case.js";
-import nameMatchesDir from "./rules/name-matches-dir.js";
-import descriptionLength from "./rules/description-length.js";
-import descriptionHasTrigger from "./rules/description-has-trigger.js";
-import descriptionNoHtml from "./rules/description-no-html.js";
-import noMultipleH1 from "./rules/no-multiple-h1.js";
-import h1MatchesName from "./rules/h1-matches-name.js";
-import bodyMaxLength from "./rules/body-max-length.js";
-import noBrokenRelativeLinks from "./rules/no-broken-relative-links.js";
+import requireFrontmatter from "./rules/require-frontmatter";
+import nameKebabCase from "./rules/name-kebab-case";
+import nameMatchesDir from "./rules/name-matches-dir";
+import descriptionLength from "./rules/description-length";
+import descriptionHasTrigger from "./rules/description-has-trigger";
+import descriptionNoHtml from "./rules/description-no-html";
+import noMultipleH1 from "./rules/no-multiple-h1";
+import h1MatchesName from "./rules/h1-matches-name";
+import bodyMaxLength from "./rules/body-max-length";
+import noBrokenRelativeLinks from "./rules/no-broken-relative-links";
 
-const version = "0.1.0";
-
-/** @type {import("eslint").ESLint.Plugin} */
 const plugin = {
 	meta: {
-		name: "eslint-plugin-skill",
-		version,
+		name: __PKG_NAME__,
+		version: __PKG_VERSION__,
 	},
 	rules: {
 		"require-frontmatter": requireFrontmatter,
@@ -39,13 +37,14 @@ const plugin = {
 		"body-max-length": bodyMaxLength,
 		"no-broken-relative-links": noBrokenRelativeLinks,
 	},
-};
+	configs: {} as Record<string, Linter.Config>,
+} satisfies ESLint.Plugin;
 
 /**
  * Rule severities for the `recommended` preset. `warn` marks quality signals
  * that shouldn't necessarily fail CI; `strict` promotes them to `error`.
  */
-const RECOMMENDED_RULES = {
+const RECOMMENDED_RULES: Linter.RulesRecord = {
 	"skill/require-frontmatter": "error",
 	"skill/name-kebab-case": "error",
 	"skill/name-matches-dir": "error",
@@ -60,16 +59,11 @@ const RECOMMENDED_RULES = {
 	// body title. Teams that adopt the "H1 mirrors name" convention can opt in.
 };
 
-const STRICT_RULES = Object.fromEntries(
-	Object.keys(RECOMMENDED_RULES).map(id => [id, "error"]),
+const STRICT_RULES: Linter.RulesRecord = Object.fromEntries(
+	Object.keys(RECOMMENDED_RULES).map((id) => [id, "error"]),
 );
 
-/**
- * @param {string} name
- * @param {Record<string, unknown>} rules
- * @returns {import("eslint").Linter.Config}
- */
-function makeConfig(name, rules) {
+function makeConfig(name: string, rules: Linter.RulesRecord): Linter.Config {
 	return {
 		name,
 		files: ["**/SKILL.md"],
@@ -80,9 +74,7 @@ function makeConfig(name, rules) {
 	};
 }
 
-plugin.configs = {
-	recommended: makeConfig("skill/recommended", RECOMMENDED_RULES),
-	strict: makeConfig("skill/strict", STRICT_RULES),
-};
+plugin.configs.recommended = makeConfig("skill/recommended", RECOMMENDED_RULES);
+plugin.configs.strict = makeConfig("skill/strict", STRICT_RULES);
 
 export default plugin;

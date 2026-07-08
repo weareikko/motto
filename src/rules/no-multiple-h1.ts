@@ -7,11 +7,16 @@
  * first is flagged.
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { collect } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+import type { Heading } from "mdast";
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+import { isSkillFile } from "../utils/skill-file";
+import { collect } from "../utils/ast";
+
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "multiple";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -33,18 +38,24 @@ export default {
 
 		return {
 			root(root) {
-				const h1s = collect(root, "heading").filter(h => h.depth === 1);
+				const h1s = collect<Heading>(root, "heading").filter(
+					(h) => h.depth === 1,
+				);
 				if (h1s.length > 1) {
 					// Report each extra H1 after the first.
 					for (const extra of h1s.slice(1)) {
-						context.report({
-							loc: extra.position,
-							messageId: "multiple",
-							data: { count: String(h1s.length) },
-						});
+						if (extra.position) {
+							context.report({
+								loc: extra.position,
+								messageId: "multiple",
+								data: { count: h1s.length },
+							});
+						}
 					}
 				}
 			},
 		};
 	},
 };
+
+export default rule;

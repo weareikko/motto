@@ -5,16 +5,20 @@
  * can interfere with how the description is parsed and displayed.
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+
+import { isSkillFile } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter } from "../utils/ast";
 
 // Matches an opening, closing, or self-closing tag such as <b>, </b>, <br/>,
 // or <role attr="x">. Deliberately conservative: requires a letter after `<`.
 const TAG = /<\/?[a-zA-Z][^>]*>/;
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [];
+	MessageIds: "hasTag";
+}> = {
 	meta: {
 		type: "problem",
 		docs: {
@@ -56,3 +60,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

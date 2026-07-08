@@ -6,9 +6,11 @@
  * poorly. This rule checks for a trigger cue (configurable).
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+
+import { isSkillFile } from "../utils/skill-file";
+import { parseFrontmatter } from "../utils/frontmatter";
+import { findFrontmatter } from "../utils/ast";
 
 const DEFAULT_PATTERNS = [
 	"use when",
@@ -24,8 +26,10 @@ const DEFAULT_PATTERNS = [
 	"for when",
 ];
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [{ patterns?: string[] }?];
+	MessageIds: "noTrigger";
+}> = {
 	meta: {
 		type: "suggestion",
 		docs: {
@@ -57,8 +61,8 @@ export default {
 		if (!isSkillFile(context.filename)) {
 			return {};
 		}
-		const patterns = context.options?.[0]?.patterns ?? DEFAULT_PATTERNS;
-		const lowered = patterns.map(p => p.toLowerCase());
+		const patterns = context.options[0]?.patterns ?? DEFAULT_PATTERNS;
+		const lowered = patterns.map((p) => p.toLowerCase());
 
 		return {
 			root(root) {
@@ -75,7 +79,7 @@ export default {
 					return;
 				}
 				const haystack = data.description.toLowerCase();
-				const hasTrigger = lowered.some(p => haystack.includes(p));
+				const hasTrigger = lowered.some((p) => haystack.includes(p));
 				if (!hasTrigger) {
 					context.report({
 						loc: keyLoc("description"),
@@ -83,7 +87,7 @@ export default {
 						data: {
 							examples: patterns
 								.slice(0, 2)
-								.map(p => `"${p}"`)
+								.map((p) => `"${p}"`)
 								.join(", "),
 						},
 					});
@@ -92,3 +96,5 @@ export default {
 		};
 	},
 };
+
+export default rule;

@@ -6,13 +6,17 @@
  * past a line budget (frontmatter excluded).
  */
 
-import { isSkillFile } from "../utils/skill-file.js";
-import { findFrontmatter } from "../utils/ast.js";
+import type { MarkdownRuleDefinition } from "@eslint/markdown";
+
+import { isSkillFile } from "../utils/skill-file";
+import { findFrontmatter } from "../utils/ast";
 
 const DEFAULT_MAX_LINES = 500;
 
-/** @type {import("eslint").Rule.RuleModule} */
-export default {
+const rule: MarkdownRuleDefinition<{
+	RuleOptions: [{ maxLines?: number }?];
+	MessageIds: "tooLong";
+}> = {
 	meta: {
 		type: "suggestion",
 		docs: {
@@ -40,7 +44,7 @@ export default {
 		if (!isSkillFile(context.filename)) {
 			return {};
 		}
-		const max = context.options?.[0]?.maxLines ?? DEFAULT_MAX_LINES;
+		const max = context.options[0]?.maxLines ?? DEFAULT_MAX_LINES;
 
 		return {
 			root(root) {
@@ -55,10 +59,12 @@ export default {
 							end: { line: totalLines, column: 1 },
 						},
 						messageId: "tooLong",
-						data: { lines: String(bodyLines), max: String(max) },
+						data: { lines: bodyLines, max },
 					});
 				}
 			},
 		};
 	},
 };
+
+export default rule;

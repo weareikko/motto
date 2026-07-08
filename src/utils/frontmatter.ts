@@ -9,52 +9,50 @@
  * on file line `node.position.start.line + 1 + i`.
  */
 
+import type { Yaml } from "mdast";
 import { parse as parseYaml } from "yaml";
 
-/**
- * @typedef {Object} Frontmatter
- * @property {Record<string, unknown> | null} data Parsed frontmatter object,
- *   or `null` when the YAML could not be parsed as a mapping.
- * @property {string | null} error Parse error message, if any.
- * @property {string} raw The raw YAML text (fences excluded).
- * @property {(key: string) => {start: {line:number,column:number}, end: {line:number,column:number}}} keyLoc
- *   Best-effort source location for a top-level key; falls back to the node's
- *   own location when the key can't be found textually.
- */
+import type { SourceRange } from "../types";
 
-/**
- * @param {import("mdast").Yaml} node The `yaml` frontmatter node.
- * @returns {Frontmatter}
- */
-export function parseFrontmatter(node) {
+export interface Frontmatter {
+	/** Parsed frontmatter object, or `null` when it isn't a mapping. */
+	data: Record<string, unknown> | null;
+	/** Parse error message, if any. */
+	error: string | null;
+	/** The raw YAML text (fences excluded). */
+	raw: string;
+	/** Best-effort source location for a top-level key. */
+	keyLoc: (key: string) => SourceRange;
+}
+
+export function parseFrontmatter(node: Yaml): Frontmatter {
 	const raw = typeof node.value === "string" ? node.value : "";
 	const baseLine = node.position?.start?.line ?? 1;
 	// Content begins one line after the opening `---` fence.
 	const contentStartLine = baseLine + 1;
-	const nodeLoc = node.position ?? {
+	const nodeLoc: SourceRange = node.position ?? {
 		start: { line: 1, column: 1 },
 		end: { line: 1, column: 1 },
 	};
 
-	let data = null;
-	let error = null;
+	let data: Record<string, unknown> | null = null;
+	let error: string | null = null;
 	try {
-		const parsed = parseYaml(raw);
+		const parsed: unknown = parseYaml(raw);
 		if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-			data = parsed;
+			data = parsed as Record<string, unknown>;
 		} else if (parsed === null || parsed === undefined) {
 			data = {};
 		} else {
 			error = "frontmatter is not a key/value mapping";
 		}
 	} catch (e) {
-		error = e && e.message ? e.message : String(e);
+		error = e instanceof Error ? e.message : String(e);
 	}
 
 	const lines = raw.split("\n");
 
-	/** @type {Frontmatter["keyLoc"]} */
-	function keyLoc(key) {
+	function keyLoc(key: string): SourceRange {
 		const pattern = new RegExp(`^(\\s*)(${escapeRegExp(key)})\\s*:`);
 		for (let i = 0; i < lines.length; i++) {
 			const match = pattern.exec(lines[i]);
@@ -73,10 +71,6 @@ export function parseFrontmatter(node) {
 	return { data, error, raw, keyLoc };
 }
 
-/**
- * @param {string} value
- * @returns {string}
- */
-function escapeRegExp(value) {
+function escapeRegExp(value: string): string {
 	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

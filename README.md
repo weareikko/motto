@@ -1,12 +1,13 @@
-# eslint-plugin-skill
+# @ikko-dev/eslint-plugin-skill
 
-An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) (`SKILL.md` files) for quality, so their quality holds up as you write more of them and they evolve.
+[![NPM Version](https://img.shields.io/npm/v/@ikko-dev/eslint-plugin-skill.svg?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@ikko-dev/eslint-plugin-skill/)
+[![Downloads](https://img.shields.io/npm/dm/@ikko-dev/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@ikko-dev/eslint-plugin-skill/)
+[![Size](https://img.shields.io/bundlephobia/minzip/@ikko-dev/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853&label=size)](https://bundlephobia.com/package/@ikko-dev/eslint-plugin-skill)
+![Codecov](https://img.shields.io/codecov/c/github/ikko-dev/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853)
 
-It is built on [`@eslint/markdown`](https://github.com/eslint/markdown) and authored to port cleanly to [oxlint](https://oxc.rs/docs/guide/usage/linter) once oxlint ships markdown support — see [PORTABILITY.md](./PORTABILITY.md).
+An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) (`SKILL.md` files) for quality.
 
-Inspired by [jeremiewerner/motto](https://github.com/jeremiewerner/motto) — but this is a linter, not a framework, it targets the standard `SKILL.md` format, and no rule is ported verbatim.
-
-## What it checks
+## Rules
 
 The linter targets the standard Claude Code skill format: `name` + `description` YAML frontmatter and a Markdown body that starts with an H1.
 
@@ -78,38 +79,3 @@ export default [
   },
 ];
 ```
-
-## Development
-
-```sh
-npm install
-npm test          # node --test + ESLint RuleTester
-npm run lint      # dogfood against tests/fixtures
-npm run check     # lint + test (the CI gate)
-```
-
-`.github/workflows/ci.yml` runs lint + test on every push and PR to `main`.
-
-## Releasing
-
-Publishing to npm is driven by git tags, matching the rest of `@ikko-dev`:
-
-1. Bump `version` in `package.json` and add a `CHANGELOG.md` entry.
-2. Commit, then tag and push:
-
-   ```sh
-   git tag 0.2.0
-   git push origin main --tags
-   ```
-
-3. `.github/workflows/publish.yml` runs on the tag: it tests, then
-   `npm publish --access public` (tag `next` for `alpha`/`beta`/`rc` versions,
-   otherwise `latest`) and creates a GitHub Release from the tag.
-
-Requires an `NPM_TOKEN` repository secret with publish rights to the
-`@ikko-dev` npm scope. `--provenance` is intentionally omitted because the
-repository is private; re-enable it (with `id-token: write`) if it goes public.
-
-## License
-
-MIT © ikko-dev
