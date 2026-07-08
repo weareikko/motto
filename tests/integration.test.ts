@@ -18,6 +18,12 @@ function lintFixture(relPath: string) {
 	return linter.verify(code, plugin.configs.recommended, { filename });
 }
 
+/** Lint arbitrary content at a given path through the preset. */
+function lintAt(filename: string, code: string) {
+	const linter = new Linter();
+	return linter.verify(code, plugin.configs.recommended, { filename });
+}
+
 describe("recommended preset (end-to-end)", () => {
 	it("passes a well-formed skill", () => {
 		const messages = lintFixture("good-skill/SKILL.md");
@@ -36,5 +42,20 @@ describe("recommended preset (end-to-end)", () => {
 
 		// Opt-in rule must not fire under the recommended preset.
 		expect(ruleIds).not.toContain("skill/h1-matches-name");
+	});
+
+	it("detects an orphaned reference file", () => {
+		const messages = lintFixture("orphan-skill/SKILL.md");
+		const ruleIds = new Set(messages.map((m) => m.ruleId));
+		expect(ruleIds).toContain("skill/no-orphan-references");
+	});
+
+	it("lints reference files under references/ (not just SKILL.md)", () => {
+		const messages = lintAt(
+			join(fixtures, "orphan-skill/references/doc2.md"),
+			"# Doc\n\nContent.\n",
+		);
+		const ruleIds = new Set(messages.map((m) => m.ruleId));
+		expect(ruleIds).toContain("skill/descriptive-reference-filenames");
 	});
 });

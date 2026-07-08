@@ -20,6 +20,10 @@ import h1MatchesName from "./rules/h1-matches-name";
 import bodyMaxLength from "./rules/body-max-length";
 import noBrokenRelativeLinks from "./rules/no-broken-relative-links";
 import noUnknownFrontmatterKeys from "./rules/no-unknown-frontmatter-keys";
+import refsOneLevelDeep from "./rules/refs-one-level-deep";
+import noOrphanReferences from "./rules/no-orphan-references";
+import descriptiveReferenceFilenames from "./rules/descriptive-reference-filenames";
+import largeReferenceToc from "./rules/large-reference-toc";
 
 const plugin = {
 	meta: {
@@ -38,6 +42,10 @@ const plugin = {
 		"body-max-length": bodyMaxLength,
 		"no-broken-relative-links": noBrokenRelativeLinks,
 		"no-unknown-frontmatter-keys": noUnknownFrontmatterKeys,
+		"refs-one-level-deep": refsOneLevelDeep,
+		"no-orphan-references": noOrphanReferences,
+		"descriptive-reference-filenames": descriptiveReferenceFilenames,
+		"large-reference-toc": largeReferenceToc,
 	},
 	configs: {} as Record<string, Linter.Config>,
 } satisfies ESLint.Plugin;
@@ -55,8 +63,12 @@ const RECOMMENDED_RULES: Linter.RulesRecord = {
 	"skill/no-multiple-h1": "error",
 	"skill/no-broken-relative-links": "error",
 	"skill/no-unknown-frontmatter-keys": "error",
+	"skill/refs-one-level-deep": "error",
 	"skill/description-has-trigger": "warn",
 	"skill/body-max-length": "warn",
+	"skill/no-orphan-references": "warn",
+	"skill/descriptive-reference-filenames": "warn",
+	"skill/large-reference-toc": "warn",
 	// `h1-matches-name` is intentionally omitted: the standard skill format does
 	// not require an H1, and the frontmatter `name` is a display label, not the
 	// body title. Teams that adopt the "H1 mirrors name" convention can opt in.
@@ -69,7 +81,7 @@ const STRICT_RULES: Linter.RulesRecord = Object.fromEntries(
 function makeConfig(name: string, rules: Linter.RulesRecord): Linter.Config {
 	return {
 		name,
-		files: ["**/SKILL.md"],
+		files: ["**/SKILL.md", "**/references/**/*.md"],
 		plugins: { markdown, skill: plugin },
 		language: "markdown/gfm",
 		languageOptions: { frontmatter: "yaml" },
