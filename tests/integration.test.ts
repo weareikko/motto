@@ -58,4 +58,22 @@ describe("recommended preset (end-to-end)", () => {
 		const ruleIds = new Set(messages.map((m) => m.ruleId));
 		expect(ruleIds).toContain("skill/descriptive-reference-filenames");
 	});
+
+	it("validates allowed-tools shape, universally", () => {
+		const messages = lintAt(
+			join(fixtures, "good-skill/SKILL.md"),
+			"---\nname: demo\ndescription: x. Use when needed.\nallowed-tools: []\n---\n\n# demo\n",
+		);
+		const ruleIds = new Set(messages.map((m) => m.ruleId));
+		expect(ruleIds).toContain("skill/valid-allowed-tools");
+	});
+
+	it("keeps kind-specific rules opt-in even when a kind is declared", () => {
+		const messages = lintAt(
+			join(fixtures, "good-skill/SKILL.md"),
+			"---\nname: demo\ndescription: x. Use when needed.\nmetadata:\n  kind: procedural\n---\n\n# demo\n\nNo steps here.\n",
+		);
+		const ruleIds = new Set(messages.map((m) => m.ruleId));
+		expect(ruleIds).not.toContain("skill/procedural-has-steps");
+	});
 });

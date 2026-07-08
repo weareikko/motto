@@ -24,6 +24,10 @@ import refsOneLevelDeep from "./rules/refs-one-level-deep";
 import noOrphanReferences from "./rules/no-orphan-references";
 import descriptiveReferenceFilenames from "./rules/descriptive-reference-filenames";
 import largeReferenceToc from "./rules/large-reference-toc";
+import validAllowedTools from "./rules/valid-allowed-tools";
+import proceduralHasSteps from "./rules/procedural-has-steps";
+import referenceHasContent from "./rules/reference-has-content";
+import multiDomainHasVariants from "./rules/multi-domain-has-variants";
 
 const plugin = {
 	meta: {
@@ -46,6 +50,10 @@ const plugin = {
 		"no-orphan-references": noOrphanReferences,
 		"descriptive-reference-filenames": descriptiveReferenceFilenames,
 		"large-reference-toc": largeReferenceToc,
+		"valid-allowed-tools": validAllowedTools,
+		"procedural-has-steps": proceduralHasSteps,
+		"reference-has-content": referenceHasContent,
+		"multi-domain-has-variants": multiDomainHasVariants,
 	},
 	configs: {} as Record<string, Linter.Config>,
 } satisfies ESLint.Plugin;
@@ -64,6 +72,7 @@ const RECOMMENDED_RULES: Linter.RulesRecord = {
 	"skill/no-broken-relative-links": "error",
 	"skill/no-unknown-frontmatter-keys": "error",
 	"skill/refs-one-level-deep": "error",
+	"skill/valid-allowed-tools": "error",
 	"skill/description-has-trigger": "warn",
 	"skill/body-max-length": "warn",
 	"skill/no-orphan-references": "warn",
