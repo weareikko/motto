@@ -1,0 +1,25 @@
+name: Check skill reference duplication
+
+on:
+  push:
+    paths:
+      - "**/SKILL.md"
+      - "**/references/**"
+  pull_request:
+    paths:
+      - "**/SKILL.md"
+      - "**/references/**"
+
+jobs:
+  check-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Fails only on divergence (same filename, different content across
+      # sibling skills) — duplicates are printed but non-blocking by default.
+      - run: npx skill-check-refs .

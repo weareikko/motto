@@ -97,13 +97,17 @@ ESLint (and oxlint) process files **independently**; a per-file rule cannot reli
 
 The spike (P2 below) will benchmark jscpd (+ a hash pass) against the CRO case and pick: adopt a tool, wrap a tool, or build a thin analyzer. Whatever the engine, the wrapper groups by **scope boundary** (default: enclosing plugin dir), classifies findings as byte-identical vs same-name-divergent vs near-duplicate, and supports an **allowlist** for deliberate divergence.
 
-## 6. Open decisions
+**Spike result:** ran `npx jscpd --pattern "**/references/*.md" --min-tokens 20` against the real CRO `references/` trees. It works (found 10 clones, 19% duplicated lines) but reports **line-level clone fragments** from a generic tokenizer — it doesn't classify at the granularity this needs (a whole reference file that's byte-identical to another vs. one that's the same *name* but has drifted vs. two unrelated near-similar files). Getting that 3-way classification out of jscpd's clone-report shape would mean post-processing its output into something more complex than just computing it directly. `semgrep` wasn't trialled — not installed, requires a separate Python toolchain, and per the research phase is AST-pattern-oriented per language with weak markdown support, a poor fit for "these two docs are ~identical."
 
-1. **Dedup scope boundary** — plugin dir (siblings) by default? Also cross-plugin within a repo?
-2. **Type resolution** — declared (`metadata.kind`) as source of truth, auto-detect as advisory, or both?
-3. **Near-duplicate detection** — include similarity-based near-dupe (needs a threshold + normalization), or ship only exact-hash + same-name-divergent first?
-4. **Deliverable form for cross-skill checks** — separate CLI command vs. an ESLint "collection" report vs. a Vitest-style repo audit.
-5. **Deliberate-divergence escape hatch** — allowlist file, or a marker comment in the reference file.
+**Decision: build a thin native analyzer** (`node:crypto` hashing, zero new runtime deps) rather than adopt or wrap a tool. It directly computes the three-tier classification below with exact control over severity and normalization, and stays consistent with this package's "minimal dependencies" convention.
+
+## 6. Decisions
+
+1. **Dedup scope boundary** — **resolved (PR 3):** default is the plugin dir (parent of the nearest ancestor literally named `skills`), matching sibling skills under one `plugins/<x>/skills/*`. `--scope=repo` opts into comparing every discovered skill in one global scope.
+2. **Type resolution** — open; deferred to PR 4 (taxonomy).
+3. **Near-duplicate detection** — **resolved (PR 3):** shipped as opt-in (`--near-duplicates` / `{ nearDuplicates: true }`), off by default, using word-shingle Jaccard similarity with a configurable threshold (default 0.75).
+4. **Deliverable form for cross-skill checks** — **resolved (PR 3):** a separate CLI (`skill-check-refs`) + library export (`@ikko-dev/eslint-plugin-skill/dedup`), not an ESLint rule (see the architectural note above) and not a test-runner-shaped audit.
+5. **Deliberate-divergence escape hatch** — **resolved (PR 3):** `--ignore=<filename,...>` / `{ ignoreRelPaths: [...] }`, keyed by reference filename.
 
 ## 7. Delivery plan (one PR at a time)
 
@@ -111,8 +115,8 @@ Each PR is opened for review, merged, then the next begins.
 
 - **PR 1 — frontmatter hardening:** tighten `name-kebab-case` (max-64 + reserved words `anthropic`/`claude`); add `no-unknown-frontmatter-keys` (allowlist the spec's keys, catch typos). Stays within the existing `SKILL.md` scope. Ships this design doc.
 - **PR 2 — reference-file linting:** extend the preset to lint `references/**/*.md`; add `refs-one-level-deep`, `no-orphan-references`, `descriptive-reference-filenames`, `large-reference-toc`. Answers "lint reference files too."
-- **PR 3 — cross-skill dedup (spike + implement):** evaluate jscpd/semgrep/CPD vs a hash pass against the CRO case; adopt/wrap/build; ship exact-duplicate + same-name-divergence detection, plugin-scoped, with allowlist + CI wiring.
-- **PR 4 — taxonomy:** KIND detection + optional `metadata.kind` declaration; type-specific advisory rules; optional near-duplicate detection.
+- **PR 3 — cross-skill dedup:** evaluated jscpd (spiked against the real CRO plugin) and semgrep; built a thin native analyzer instead (see spike result above). Ships `skill-check-refs` (CLI + `./dedup` library export): exact-duplicate + same-name-divergence detection, plugin-scoped by default, opt-in near-duplicate detection, `--ignore` escape hatch. Verified end-to-end against the real CRO plugin — reproduces exactly the 3 duplicates / 2 divergences identified at the start of this investigation.
+- **PR 4 — taxonomy:** KIND detection + optional `metadata.kind` declaration; type-specific advisory rules.
 
 ## Sources (primary unless noted)
 - Anthropic — Skill authoring best practices: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices ; https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices

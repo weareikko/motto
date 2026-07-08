@@ -91,3 +91,13 @@ export default [
   },
 ];
 ```
+
+## Cross-skill reference duplication
+
+`SKILL.md` rules see one file at a time — they can't tell that two *different* skills carry the same reference content, copied or drifted. That's a separate, repo-level check:
+
+```sh
+npx skill-check-refs .
+```
+
+It groups sibling skills (by default, those sharing a plugin's `skills/` directory), hashes their `references/**/*.md` files, and reports **duplicates** (byte-identical across skills — a maintenance burden) and **divergences** (same filename, different content — a silent correctness hazard, and the only case that fails CI by default). See [`docs/check-refs.md`](docs/check-refs.md) for options (`--near-duplicates`, `--scope`, `--ignore`) and an example CI workflow at [`configs/check-refs.workflow.yml`](configs/check-refs.workflow.yml).
