@@ -1,10 +1,7 @@
 {
-  "name": "eslint-plugin-skill",
+  "name": "@ikko-dev/eslint-plugin-skill",
   "version": "0.1.0",
   "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
-  "type": "module",
-  "license": "MIT",
-  "author": "ikko-dev",
   "keywords": [
     "eslint",
     "eslintplugin",
@@ -16,6 +13,17 @@
     "skill",
     "markdown"
   ],
+  "homepage": "https://github.com/ikko-dev/eslint-plugin-skill#readme",
+  "bugs": {
+    "url": "https://github.com/ikko-dev/eslint-plugin-skill/issues"
+  },
+  "license": "MIT",
+  "author": "ikko-dev",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ikko-dev/eslint-plugin-skill.git"
+  },
+  "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
@@ -25,12 +33,18 @@
     "configs",
     "docs",
     "README.md",
-    "PORTABILITY.md"
+    "PORTABILITY.md",
+    "CHANGELOG.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "node --test",
     "test:watch": "node --test --watch",
-    "lint": "eslint \"**/SKILL.md\""
+    "lint": "eslint \"**/SKILL.md\"",
+    "check": "npm run lint && npm test",
+    "prepublishOnly": "npm run check && npm pack --dry-run"
   },
   "engines": {
     "node": ">=20"

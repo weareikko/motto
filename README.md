@@ -35,7 +35,7 @@ Not enabled by any preset — the standard skill format does not require an H1, 
 ## Install
 
 ```sh
-npm install --save-dev eslint eslint-plugin-skill
+npm install --save-dev eslint @ikko-dev/eslint-plugin-skill
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ npm install --save-dev eslint eslint-plugin-skill
 Add a flat config at the root of your skills repo (`eslint.config.js`):
 
 ```js
-import skill from "eslint-plugin-skill";
+import skill from "@ikko-dev/eslint-plugin-skill";
 
 export default [skill.configs.recommended];
 ```
@@ -54,14 +54,14 @@ The preset already globs `**/SKILL.md`, loads the markdown language with YAML fr
 npx eslint "**/SKILL.md"
 ```
 
-A ready-to-copy config lives in [`configs/eslint.config.example.js`](configs/eslint.config.example.js), and a GitHub Actions workflow that lints skills on every PR is in [`.github/workflows/lint-skills.yml`](.github/workflows/lint-skills.yml).
+A ready-to-copy config lives in [`configs/eslint.config.example.js`](configs/eslint.config.example.js), and a GitHub Actions workflow that lints skills on every PR is in [`configs/lint-skills.workflow.yml`](configs/lint-skills.workflow.yml) — drop it into your skills repo at `.github/workflows/lint-skills.yml`.
 
 ### Configuring rules
 
 Rules with options can be tuned:
 
 ```js
-import skill from "eslint-plugin-skill";
+import skill from "@ikko-dev/eslint-plugin-skill";
 
 export default [
   skill.configs.recommended,
@@ -85,7 +85,30 @@ export default [
 npm install
 npm test          # node --test + ESLint RuleTester
 npm run lint      # dogfood against tests/fixtures
+npm run check     # lint + test (the CI gate)
 ```
+
+`.github/workflows/ci.yml` runs lint + test on every push and PR to `main`.
+
+## Releasing
+
+Publishing to npm is driven by git tags, matching the rest of `@ikko-dev`:
+
+1. Bump `version` in `package.json` and add a `CHANGELOG.md` entry.
+2. Commit, then tag and push:
+
+   ```sh
+   git tag 0.2.0
+   git push origin main --tags
+   ```
+
+3. `.github/workflows/publish.yml` runs on the tag: it tests, then
+   `npm publish --access public` (tag `next` for `alpha`/`beta`/`rc` versions,
+   otherwise `latest`) and creates a GitHub Release from the tag.
+
+Requires an `NPM_TOKEN` repository secret with publish rights to the
+`@ikko-dev` npm scope. `--provenance` is intentionally omitted because the
+repository is private; re-enable it (with `id-token: write`) if it goes public.
 
 ## License
 
