@@ -55,6 +55,7 @@ A skill can declare what *kind* it is via `metadata.kind` in frontmatter (`proce
 | [`procedural-has-steps`](docs/rules/procedural-has-steps.md) | `kind: procedural` | body contains an ordered (numbered) list |
 | [`reference-has-content`](docs/rules/reference-has-content.md) | `kind: reference` | `references/` has at least one file |
 | [`multi-domain-has-variants`](docs/rules/multi-domain-has-variants.md) | `kind: multi-domain` | `references/` has at least two files |
+| [`meta-prefers-dispatch-table`](docs/rules/meta-prefers-dispatch-table.md) | `kind: meta` | suggests a markdown table over prose for the dispatch list ([evidence](docs/research/meta-dispatch-table-vs-prose.md): ~21% cheaper, no accuracy difference) |
 
 ```js
 {

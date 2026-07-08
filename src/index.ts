@@ -28,6 +28,7 @@ import validAllowedTools from "./rules/valid-allowed-tools";
 import proceduralHasSteps from "./rules/procedural-has-steps";
 import referenceHasContent from "./rules/reference-has-content";
 import multiDomainHasVariants from "./rules/multi-domain-has-variants";
+import metaPrefersDispatchTable from "./rules/meta-prefers-dispatch-table";
 
 const plugin = {
 	meta: {
@@ -54,6 +55,7 @@ const plugin = {
 		"procedural-has-steps": proceduralHasSteps,
 		"reference-has-content": referenceHasContent,
 		"multi-domain-has-variants": multiDomainHasVariants,
+		"meta-prefers-dispatch-table": metaPrefersDispatchTable,
 	},
 	configs: {} as Record<string, Linter.Config>,
 } satisfies ESLint.Plugin;
@@ -81,6 +83,9 @@ const RECOMMENDED_RULES: Linter.RulesRecord = {
 	// `h1-matches-name` is intentionally omitted: the standard skill format does
 	// not require an H1, and the frontmatter `name` is a display label, not the
 	// body title. Teams that adopt the "H1 mirrors name" convention can opt in.
+	// `meta-prefers-dispatch-table` is intentionally omitted: it's backed by a
+	// single empirical test (docs/research/meta-dispatch-table-vs-prose.md),
+	// not the multiply-corroborated evidence behind the rules above.
 };
 
 const STRICT_RULES: Linter.RulesRecord = Object.fromEntries(
