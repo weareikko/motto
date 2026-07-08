@@ -9,15 +9,16 @@ An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/e
 
 ## Rules
 
-The linter targets the standard Claude Code skill format: `name` + `description` YAML frontmatter and a Markdown body that starts with an H1.
+The linter targets the standard Claude Code skill format: `name` + `description` YAML frontmatter and a concise Markdown body.
 
 | Rule | What it enforces | `recommended` |
 | --- | --- | --- |
 | [`require-frontmatter`](docs/rules/require-frontmatter.md) | `name` and `description` present and non-empty | error |
-| [`name-kebab-case`](docs/rules/name-kebab-case.md) | `name` is letter-start kebab-case | error |
+| [`name-kebab-case`](docs/rules/name-kebab-case.md) | `name` is valid: kebab-case, ≤ 64 chars, no reserved words | error |
 | [`name-matches-dir`](docs/rules/name-matches-dir.md) | `name` equals the skill's folder name | error |
 | [`description-length`](docs/rules/description-length.md) | `description` ≤ 1024 chars (configurable) | error |
 | [`description-no-html`](docs/rules/description-no-html.md) | no HTML/XML tags in `description` | error |
+| [`no-unknown-frontmatter-keys`](docs/rules/no-unknown-frontmatter-keys.md) | frontmatter keys are known spec fields (catches typos) | error |
 | [`no-multiple-h1`](docs/rules/no-multiple-h1.md) | at most one top-level `#` H1 in the body | error |
 | [`no-broken-relative-links`](docs/rules/no-broken-relative-links.md) | relative links/images resolve on disk | error |
 | [`description-has-trigger`](docs/rules/description-has-trigger.md) | `description` says *when* to use the skill | warn |

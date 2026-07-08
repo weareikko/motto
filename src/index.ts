@@ -19,6 +19,7 @@ import noMultipleH1 from "./rules/no-multiple-h1";
 import h1MatchesName from "./rules/h1-matches-name";
 import bodyMaxLength from "./rules/body-max-length";
 import noBrokenRelativeLinks from "./rules/no-broken-relative-links";
+import noUnknownFrontmatterKeys from "./rules/no-unknown-frontmatter-keys";
 
 const plugin = {
 	meta: {
@@ -36,6 +37,7 @@ const plugin = {
 		"h1-matches-name": h1MatchesName,
 		"body-max-length": bodyMaxLength,
 		"no-broken-relative-links": noBrokenRelativeLinks,
+		"no-unknown-frontmatter-keys": noUnknownFrontmatterKeys,
 	},
 	configs: {} as Record<string, Linter.Config>,
 } satisfies ESLint.Plugin;
@@ -52,6 +54,7 @@ const RECOMMENDED_RULES: Linter.RulesRecord = {
 	"skill/description-no-html": "error",
 	"skill/no-multiple-h1": "error",
 	"skill/no-broken-relative-links": "error",
+	"skill/no-unknown-frontmatter-keys": "error",
 	"skill/description-has-trigger": "warn",
 	"skill/body-max-length": "warn",
 	// `h1-matches-name` is intentionally omitted: the standard skill format does
