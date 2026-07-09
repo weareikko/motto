@@ -127,3 +127,7 @@ Each PR is opened for review, merged, then the next begins.
 - Academic: "Agent Skills for LLMs: Architecture, Acquisition, Security" (arXiv 2602.12430); Voyager (skill library, procedural memory). Community: wshobson/agents; serghei.pl agent-skills-101.
 
 _Caveats: line/token/char budgets are soft, configurable defaults — keep them options, not hard limits. The `scripts/references/assets` layout is a convention, not a hard requirement (top-level reference files are valid) — don't hard-require a `references/` dir. The 5-KIND taxonomy, per-type rules, and cross-skill dedup are design synthesis: no source prescribes them (and none documents any cross-skill sharing convention — that silence is the opportunity)._
+
+## 8. Ongoing empirical research
+
+This document captures the taxonomy design; **[`docs/research/`](../research/README.md)** is where individual format/efficiency claims get tested and recorded — one entry per falsifiable question, evidence, and verdict (including negative results), following the pattern established by the `<steps><step>` tag investigation. See [`docs/research/backlog.md`](../research/backlog.md) for the current queue of untested hypotheses across the `reference`, `multi-domain`, `tool-wrapper`, and `meta` kinds.
