@@ -1,0 +1,52 @@
+{
+  "name": "@ikko-dev/motto",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Skill-eval tool: validate a Claude Code Agent Skill against its own description contract — trigger fidelity, claim fidelity, and token cost — across harnesses and models.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "skill",
+    "eval",
+    "evals",
+    "llm"
+  ],
+  "homepage": "https://github.com/ikko-dev/motto/tree/main/packages/motto#readme",
+  "bugs": {
+    "url": "https://github.com/ikko-dev/motto/issues"
+  },
+  "license": "MIT",
+  "author": "ikko-dev",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ikko-dev/motto.git",
+    "directory": "packages/motto"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "typecheck": "tsc --noEmit",
+    "evals": "vitest run --config vite.eval.config.ts",
+    "evals:list": "tsx src/list-harnesses.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "yaml": "^2.9.0"
+  }
+}

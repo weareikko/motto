@@ -2,13 +2,13 @@
  * Harness registry + availability helpers for skill research evals.
  */
 
-import type { Harness } from "./types.ts";
-import { claudeHarness } from "./claude.ts";
-import { piHarness } from "./pi.ts";
-import { opencodeHarness } from "./opencode.ts";
-import { codexHarness } from "./codex.ts";
+import type { Harness } from "./types";
+import { claudeHarness } from "./claude";
+import { piHarness } from "./pi";
+import { opencodeHarness } from "./opencode";
+import { codexHarness } from "./codex";
 
-export type { Harness, HarnessTask, HarnessResult } from "./types.ts";
+export type { Harness, HarnessTask, HarnessResult } from "./types";
 
 export const HARNESSES: Harness[] = [
 	claudeHarness,

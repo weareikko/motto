@@ -1,0 +1,68 @@
+{
+  "name": "@ikko-dev/eslint-plugin-skill",
+  "version": "0.1.0",
+  "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "oxlint",
+    "claude",
+    "claude-code",
+    "skills",
+    "skill",
+    "markdown"
+  ],
+  "homepage": "https://github.com/ikko-dev/motto/tree/main/packages/eslint-plugin-skill#readme",
+  "bugs": {
+    "url": "https://github.com/ikko-dev/motto/issues"
+  },
+  "license": "MIT",
+  "author": "ikko-dev",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ikko-dev/motto.git",
+    "directory": "packages/eslint-plugin-skill"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./dedup": {
+      "types": "./dist/dedup/index.d.ts",
+      "default": "./dist/dedup/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "skill-check-refs": "./dist/dedup/cli.js"
+  },
+  "files": [
+    "dist",
+    "configs",
+    "docs",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly && chmod +x dist/dedup/cli.js",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "prepublishOnly": "npm run build && npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "dependencies": {
+    "@eslint/markdown": "^8.0.3",
+    "yaml": "^2.9.0"
+  }
+}

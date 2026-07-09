@@ -26,11 +26,12 @@ import type { JsonValue, JudgeContext } from "vitest-evals";
 import { describe, it } from "vitest";
 import { createHarness as createEvalHarness, createJudge, describeEval } from "vitest-evals";
 
-import { availableHarnesses } from "./harness/index.ts";
-import { evalsEnabled } from "./config.ts";
+import { availableHarnesses } from "../src/harness/index";
+import { evalsEnabled } from "../src/config";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const FIX = join(here, "..", "docs", "research", "fixtures", "reference-split-vs-consolidate");
+// packages/motto/evals/ -> repo root is three levels up.
+const FIX = join(here, "..", "..", "..", "docs", "research", "fixtures", "reference-split-vs-consolidate");
 
 interface Input {
 	layout: "consolidated" | "split";

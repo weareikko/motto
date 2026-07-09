@@ -1,9 +1,11 @@
+import { fileURLToPath } from "node:url";
 import { config as loadDotenv } from "dotenv";
 import { defineConfig } from "vitest/config";
 
-// Load `.env` in the config process too, so top-level availability checks in
-// the eval files (which decide which suites to register) see the credentials.
-loadDotenv();
+// Load the monorepo-root `.env` (two levels up from packages/motto/) in the
+// config process, so top-level availability checks in the eval files (which
+// decide which suites to register) see the credentials.
+loadDotenv({ path: fileURLToPath(new URL("../../.env", import.meta.url)) });
 
 // Separate config for evals so they never run under the default `npm test`
 // (unit RuleTester specs). Evals call real agent CLIs and cost money — they
