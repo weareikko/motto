@@ -5,9 +5,9 @@
  * Run: npx tsx evals/list-harnesses.ts
  */
 
-import { detectAll } from "./harness/index.ts";
-import { judgeAvailable } from "./judge/llm-judge.ts";
-import { evalsEnabled } from "./config.ts";
+import { detectAll } from "./harness/index";
+import { judgeAvailable } from "./judge/llm-judge";
+import { evalsEnabled } from "./config";
 
 async function main(): Promise<void> {
 	const rows = await detectAll();

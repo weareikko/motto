@@ -8,9 +8,9 @@
  * from one definition.
  */
 
-import type { Harness, HarnessResult } from "./harness/index.ts";
-import { availableHarnesses } from "./harness/index.ts";
-import { modelsFromEnv, type ModelSpec } from "./config.ts";
+import type { Harness, HarnessResult } from "./harness/index";
+import { availableHarnesses } from "./harness/index";
+import { modelsFromEnv, type ModelSpec } from "./config";
 
 export interface BenchmarkCase<Ctx = unknown> {
 	id: string;

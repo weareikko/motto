@@ -1,78 +1,34 @@
 {
-  "name": "@ikko-dev/eslint-plugin-skill",
-  "version": "0.1.0",
-  "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
-  "keywords": [
-    "eslint",
-    "eslintplugin",
-    "eslint-plugin",
-    "oxlint",
-    "claude",
-    "claude-code",
-    "skills",
-    "skill",
-    "markdown"
-  ],
-  "homepage": "https://github.com/ikko-dev/eslint-plugin-skill#readme",
-  "bugs": {
-    "url": "https://github.com/ikko-dev/eslint-plugin-skill/issues"
-  },
+  "name": "motto",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tooling for authoring high-quality Claude Code Agent Skills: the motto skill-eval tool + the eslint-plugin-skill hygiene linter.",
+  "type": "module",
   "license": "MIT",
   "author": "ikko-dev",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ikko-dev/eslint-plugin-skill.git"
+    "url": "git+ssh://git@github.com/ikko-dev/motto.git"
   },
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./dedup": {
-      "types": "./dist/dedup/index.d.ts",
-      "default": "./dist/dedup/index.js"
-    }
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "skill-check-refs": "./dist/dedup/cli.js"
-  },
-  "files": [
-    "dist",
-    "configs",
-    "docs",
-    "README.md",
-    "CHANGELOG.md"
+  "workspaces": [
+    "packages/*"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly && chmod +x dist/dedup/cli.js",
+    "build": "npm run build -w @ikko-dev/eslint-plugin-skill -w @ikko-dev/motto",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
-    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
-    "typecheck:evals": "tsc -p tsconfig.evals.json",
-    "check": "npm run typecheck && npm run typecheck:tests && npm run typecheck:evals && npm test",
-    "evals": "vitest run --config vite.eval.config.ts",
-    "evals:list": "tsx evals/list-harnesses.ts",
-    "prepublishOnly": "npm run check && npm run build && npm pack --dry-run"
+    "check": "npm run typecheck && npm test",
+    "changeset": "changeset",
+    "version-packages": "changeset version"
   },
   "engines": {
     "node": ">=20"
   },
-  "peerDependencies": {
-    "eslint": ">=9.0.0"
-  },
-  "dependencies": {
-    "@eslint/markdown": "^8.0.3",
-    "yaml": "^2.9.0"
-  },
   "devDependencies": {
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "@changesets/cli": "^2.29.7",
     "@types/mdast": "^4.0.4",
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",

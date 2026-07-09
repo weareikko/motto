@@ -12,8 +12,8 @@
 
 import { dirname } from "node:path";
 
-import type { Harness, HarnessResult, HarnessTask } from "./types.ts";
-import { hasAnyEnv, onPath, runBin } from "./exec.ts";
+import type { Harness, HarnessResult, HarnessTask } from "./types";
+import { hasAnyEnv, onPath, runBin } from "./exec";
 
 export const opencodeHarness: Harness = {
 	id: "opencode",
