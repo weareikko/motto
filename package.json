@@ -28,10 +28,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./dedup": {
+      "types": "./dist/dedup/index.d.ts",
+      "default": "./dist/dedup/index.js"
     }
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "skill-check-refs": "./dist/dedup/cli.js"
+  },
   "files": [
     "dist",
     "configs",
@@ -43,7 +50,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly",
+    "build": "vite build && tsc --emitDeclarationOnly && chmod +x dist/dedup/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",

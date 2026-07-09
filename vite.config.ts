@@ -22,12 +22,14 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: { index: './src/index.ts' },
+      entry: { index: './src/index.ts', 'dedup/index': './src/dedup/index.ts', 'dedup/cli': './src/dedup/cli.ts' },
       formats: ['es'],
       fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
       external,
+      // Rollup auto-preserves a leading `#!` shebang from the entry source
+      // (src/dedup/cli.ts), so the built CLI stays directly executable.
     },
     target: 'node20',
     minify: false,
