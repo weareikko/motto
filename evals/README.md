@@ -33,7 +33,7 @@ RUN_EVALS=1 EVAL_MODELS="claude=claude-opus-4-8,pi=anthropic/claude-sonnet-5" np
 
 ### Credentials
 
-Each harness gates on its own binary + a provider key in env (`ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`/etc. for Pi, `OPENAI_API_KEY` for Codex, …). The LLM judge needs `CF_AI_GATEWAY_URL` + `CF_AI_GATEWAY_TOKEN` (+ optional `EVAL_JUDGE_MODEL`). Missing credentials → that harness/judge is skipped with a stated reason, never a false pass.
+Copy [`.env.example`](../.env.example) to `.env` (gitignored) and fill in what you need — it's auto-loaded when running the evals. Each harness gates on its own binary + a provider key (`ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`/etc. for Pi, `OPENAI_API_KEY` for Codex, …). The LLM judge uses the same Cloudflare AI Gateway three-var convention as the other @ikko-dev projects: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_GATEWAY_ID` (+ optional `EVAL_JUDGE_MODEL`). Missing credentials → that harness/judge is skipped with a stated reason, never a false pass.
 
 ## Status
 
