@@ -64,3 +64,17 @@ None new. This doesn't cleanly map to a structural, low-false-positive rule the 
 
 - Single scenario (one fictional CLI, one constraint, one task). Both bugs above are a reminder that a surprising empirical result should be checked before being trusted, not just reported.
 - The "silently drops a flag" behavior wasn't graded as a first-class structured field — it was inferred from free text after the fact. A dedicated follow-up test that puts this directly in the response schema (e.g. `explicitlyFlaggedConflict: boolean`) would measure it more cleanly.
+
+## Reproduce
+
+Fixture files (both `SKILL.md` variants, the real `references/flags.md`) are checked in at [`fixtures/tool-wrapper-inline-vs-linked/`](fixtures/tool-wrapper-inline-vs-linked/) — these are real files read via the `Read` tool by the spawned agents, not inlined text. The reproduction script is [`scripts/tool-wrapper-inline-vs-linked.workflow.js`](scripts/tool-wrapper-inline-vs-linked.workflow.js), with **both bugs from this investigation already fixed** (hardcoded-path pattern; corrected conflict-aware grader):
+
+```
+# 1. Edit INLINE_PATH and LINKED_PATH at the top of the script to your
+#    checkout's absolute paths (Workflow scripts can't resolve relative
+#    paths themselves — see the comment in the script).
+# 2. Run:
+Workflow({ scriptPath: 'docs/research/scripts/tool-wrapper-inline-vs-linked.workflow.js' })
+```
+
+The script logs a `summary` with per-model, per-condition `correctness` (fraction with no genuine miss) and a full `classificationCounts` breakdown (`flagged_with_alternatives` / `silent_single_flag_no_caveat` / `genuine_miss` / etc.) — the same categories used to audit the original run. `N` (20 in the original run) and `MODELS` are both top-of-file constants.
