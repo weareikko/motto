@@ -1,40 +1,71 @@
-# Skill research evals
+# @ikko-dev/motto
 
-A standalone, **multi-harness × multi-model** eval harness (built on [`vitest-evals`](https://github.com/…)) for re-running the project's [research benchmarks](../docs/research/) outside the Claude Code workflow tool — so a finding can be re-checked across agent implementations (Claude Code, Pi, OpenCode, Codex) and across models/judges.
+Evaluate a [Claude Code Agent Skill](https://docs.claude.com/en/docs/claude-code/skills) against **its own `description` contract**. A skill's frontmatter `description` is the only machine-readable promise it makes — what it does, and when to use it. `motto` reads that promise and tests it: does the skill *trigger* when it says it will, *do* what it claims, and at what *token cost*?
 
-This is **dev tooling, not shipped** (`evals/` is excluded from the published package). It complements — doesn't replace — the reproduction `Workflow` scripts in [`docs/research/scripts/`](../docs/research/scripts/), which run the same benchmarks via the internal agent-workflow tool.
+The wedge is that this contract is free. You don't write eval cases; `motto` derives them from the `description` the author already committed to.
 
-## Why it exists
+```
+skill: incident-runbooks [reference]
 
-The research log's findings were produced with the Claude Code internal workflow tool (one model family, one harness). This subsystem lets the same benchmark run through *any* installed agent CLI at *any* model, with an independent judge — the natural way to test whether a finding generalizes beyond Claude, per the project's "measure, don't assume" thesis.
+cost (Claude tokenizer)
+  index          33 tok  — name+description, loaded every request
+  body          109 tok  — SKILL.md body, loaded on trigger
+  references  1,075 tok  — on demand across 3 file(s)
+  worst case  1,233 tok  — SKILL.md + all references read
 
-## Layout
+contract (derived from description)
+  claim: On-call runbooks for common production incidents (database, network, auth outages)
+  triggers (2): investigating · responding to an active incident
 
-- `harness/` — one adapter per agent CLI (`claude`, `pi`, `opencode`, `codex`), each with `detect()` (binary + credential gating) and headless `run()`. `claude` and `pi` adapters are validated against installed binaries; `opencode`/`codex` are written to their documented CLI surface but **unverified** (flagged in code) until those binaries are present.
-- `judge/llm-judge.ts` — dependency-free LLM judge via Cloudflare AI Gateway (a *different* model can score the answer, avoiding self-preference).
-- `runner.ts` — reusable cross-harness × cross-model benchmark runner (N trials → comparable accuracy rows).
-- `config.ts` — model sweep + the `RUN_EVALS=1` master switch.
-- `*.eval.ts` — one benchmark per file, using `describeEval`; a suite is generated per *available* harness.
+behavioral (trigger + claim fidelity)
+  claude    trigger 18/20 fired (90%)
+            claim   17/18 fulfil claim (94% of fired)
+```
 
-## Running
-
-Evals are **opt-in** — they call real agents and cost money. Nothing runs under `npm test` (unit RuleTester specs; evals are `*.eval.ts`, collected only by the separate config).
+## Install
 
 ```sh
-# Zero-cost: see what's runnable right now (binaries + credentials)
-npm run evals:list
+npm i -g @ikko-dev/motto   # (not yet published — see Status)
+```
 
-# Run the evals (only available harnesses execute; others skip)
-RUN_EVALS=1 npm run evals
+## Commands
 
-# Sweep specific models per harness
+```sh
+motto eval <skill>        # cost + contract (always) + behavioral (when a harness is present)
+motto eval <skill> --cost-only    # deterministic only: no agent runs, no credentials
+motto contract <skill>    # print the contract derived from the description
+motto doctor              # which harnesses + judge are runnable right now (zero cost)
+```
+
+`<skill>` is a skill directory or a `SKILL.md` path. Flags on `eval`: `--harness <ids>` (comma-separated), `--model <id>`, `--n <trials>` (default 20), `--json`.
+
+## The three metrics
+
+- **cost** — deterministic, zero-credential, **works everywhere**. Token cost is paid in three tiers with very different frequencies: the `name: description` *index* entry loaded on **every** request, the SKILL.md *body* loaded when the skill triggers, and each *reference* loaded only if the agent opens it (progressive disclosure). `motto` measures all three with Claude's tokenizer, so a bloated description — the most expensive kind of bloat — is visible immediately.
+- **trigger fidelity** — needs agent runs. For each positive prompt derived from the description's "use when …" cue, does the agent actually engage the skill? Reported as a fire rate over N trials, never a single pass/fail.
+- **claim fidelity** — needs runs **and** an LLM judge. On the runs where the skill fired, does the output do what the `claim` says? Scored 0/1 by an independent judge model.
+
+Cost and contract derivation are deterministic (no model, no spend). Behavioral metrics cost money and **self-skip cleanly** when a harness / judge / `RUN_EVALS=1` is absent — never a false pass. Run `motto doctor` to see what's available.
+
+## Credentials
+
+Behavioral metrics run on real agent CLIs and an LLM judge. Copy [`.env.example`](../../.env.example) to `.env` (gitignored, auto-loaded). Each harness gates on its own binary + a provider key; the judge uses the Cloudflare AI Gateway three-var convention (`CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_GATEWAY_ID`, + optional `EVAL_JUDGE_MODEL`) shared with the other @ikko-dev projects.
+
+## Multi-harness eval library
+
+Under the CLI is a reusable **multi-harness × multi-model** eval library (the `evals/` suites, built on [`vitest-evals`](https://github.com/getsentry/vitest-evals)) for re-running the project's [research benchmarks](../../docs/research/) across agent implementations and models/judges.
+
+- `harness/` — one adapter per agent CLI (`claude`, `pi`, `opencode`, `codex`), each with `detect()` (binary + credential gating) and headless `run()`. `claude`/`pi` are validated against installed binaries; `opencode`/`codex` are written to their documented CLI surface but **unverified** (flagged in code) until those binaries are present.
+- `judge/llm-judge.ts` — dependency-free LLM judge via Cloudflare AI Gateway.
+- `runner.ts` — cross-harness × cross-model benchmark runner (N trials → comparable accuracy rows).
+- `*.eval.ts` — one benchmark per file; a suite is generated per *available* harness.
+
+```sh
+npm run evals:list                 # zero-cost availability check
+RUN_EVALS=1 npm run evals          # only available harnesses execute; others skip
 RUN_EVALS=1 EVAL_MODELS="claude=claude-opus-4-8,pi=anthropic/claude-sonnet-5" npm run evals
 ```
 
-### Credentials
-
-Copy [`.env.example`](../.env.example) to `.env` (gitignored) and fill in what you need — it's auto-loaded when running the evals. Each harness gates on its own binary + a provider key (`ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`/etc. for Pi, `OPENAI_API_KEY` for Codex, …). The LLM judge uses the same Cloudflare AI Gateway three-var convention as the other @ikko-dev projects: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_GATEWAY_ID` (+ optional `EVAL_JUDGE_MODEL`). Missing credentials → that harness/judge is skipped with a stated reason, never a false pass.
-
 ## Status
 
-Foundation, first benchmark ported (`reference-split.eval.ts`). Adding a benchmark = one `*.eval.ts` reusing the harness adapters; porting the rest of the research log is incremental. `opencode`/`codex` adapters need a validation pass against real binaries before their green runs are trustworthy.
+Cost + contract derivation ship and are fully tested (deterministic, no spend). The behavioral runner (`trigger`/`claim` fidelity) is structurally complete and gated, but its live `filesRead`/judge wiring has **not** been validated end-to-end against real harness output — treat first live numbers as suspect until confirmed. Contract derivation is deterministic/templated for the MVP; a `--generate` mode (model-authored natural prompts + adjacent-out-of-scope negatives) is planned. Package stays unpublished (`private: true`) until behavioral metrics are validated on live runs.
