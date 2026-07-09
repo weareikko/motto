@@ -18,11 +18,12 @@ Evidence base for this pass: Anthropic's `skill-creator` and `code.claude.com/do
 
 ## Tool-wrapper
 
-*(Least evidenced kind in this pass — no dedicated structural survey found anywhere. A first empirical pass here has outsized value.)*
+*(Was the least evidenced kind in this pass — no dedicated structural survey found anywhere.)*
 
-7. **Inline vs. linked flag reference, given asymmetric loading.** A tool-wrapper's body loads on *every* invocation; a linked `references/` file loads only on demand. Does inlining a tool's flag reference in the body vs. linking to a file change net token cost — and at what usage pattern does each win? Test: compute a break-even model (invocation count × flag-list size) and validate against real tokenizer counts.
-8. **Is there a flag-count threshold** above which moving flags to a reference file becomes net cheaper? Test: parametric token-cost model validated against real tokenizer counts for a sample wrapper skill at varying flag-list lengths.
-9. **In-body examples vs. linked examples.** Does providing full worked command examples in-body (repeated cost every load) vs. linking to an examples file (cost only when needed) change first-attempt task success — trading recurring token cost for fewer clarification round-trips? Test: blind trial comparing task completion across both layouts.
+**#7 — RESOLVED**, see [`tool-wrapper-inline-vs-linked-flags.md`](tool-wrapper-inline-vs-linked-flags.md): N=20×3-model-tier blind trial (120 total). No correctness difference between inline and linked (100% avoided the tested flag conflict in both formats, all three tiers). Cost is conditional: linked's always-paid body is 67% cheaper, with a break-even at ~90% reference-consultation rate — above that, linked is slightly more expensive (+7.6%) due to per-file overhead. No new rule (the right choice depends on the tool's flag count and task mix, not something a static linter can infer). A real but tangential secondary finding emerged: model tier (not format) strongly predicts whether a documented constraint conflict gets surfaced to the user explicitly vs. silently resolved — logged as an observation, not a rule, since it's a model trait rather than an authoring choice.
+
+8. **Is there a flag-count threshold** above which moving flags to a reference file becomes net cheaper? **Partially answered by #7's break-even model** (~90% consultation rate is the crossover, independent of flag count per se — the open part is how consultation rate scales with flag-list length specifically). Test: parametric token-cost model validated against real tokenizer counts for a sample wrapper skill at varying flag-list lengths.
+9. **In-body examples vs. linked examples, on first-attempt task success.** **Distinct from #7** (which tested flag *reference* detail, not worked *examples*) — still open. Does providing full worked command examples in-body vs. linking to an examples file change first-attempt task success? Test: blind trial comparing task completion across both layouts.
 
 ## Meta (router)
 
@@ -36,4 +37,4 @@ Evidence base for this pass: Anthropic's `skill-creator` and `code.claude.com/do
 
 ## Suggested priority
 
-With #11–12 resolved, remaining highest-value targets: **7–9 (tool-wrapper)** — still the least evidenced kind, zero dedicated rules, and now the *only* remaining kind with no empirical pass at all. **1** (reference split-vs-consolidate) is next most interesting because we already have a real counter-example in hand contradicting the intuitive default. **4–6** (multi-domain) directly bear on the existing `multi-domain-has-variants` rule. **10** (meta cross-referencing) is a smaller follow-up to the now-resolved meta pair.
+With #7, #11, #12 resolved, remaining highest-value targets: **1** (reference split-vs-consolidate) — we already have a real counter-example in hand (skill-creator's consolidated `schemas.md`) contradicting the intuitive "always split" default. **4–6** (multi-domain) directly bear on the existing `multi-domain-has-variants` rule. **9** (tool-wrapper in-body vs. linked examples) is the remaining open item for the previously-least-evidenced kind. **10** (meta cross-referencing) is a smaller follow-up to the resolved meta pair. **3** (reference table vs. prose) is now lower priority than it looked — the *analogous* meta/dispatch table-vs-prose question (#11/#12) is resolved, but reference-*lookup* content wasn't tested directly and shouldn't be assumed to behave identically.
