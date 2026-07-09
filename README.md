@@ -9,7 +9,9 @@ An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/e
 
 ## Rules
 
-The linter targets the standard Claude Code skill format: `name` + `description` YAML frontmatter and a concise Markdown body.
+The linter targets the standard Claude Code skill format: `name` + `description` YAML frontmatter, a concise Markdown body, and bundled reference files under `references/`.
+
+**Skill (`SKILL.md`) rules:**
 
 | Rule | What it enforces | `recommended` |
 | --- | --- | --- |
@@ -21,10 +23,19 @@ The linter targets the standard Claude Code skill format: `name` + `description`
 | [`no-unknown-frontmatter-keys`](docs/rules/no-unknown-frontmatter-keys.md) | frontmatter keys are known spec fields (catches typos) | error |
 | [`no-multiple-h1`](docs/rules/no-multiple-h1.md) | at most one top-level `#` H1 in the body | error |
 | [`no-broken-relative-links`](docs/rules/no-broken-relative-links.md) | relative links/images resolve on disk | error |
+| [`refs-one-level-deep`](docs/rules/refs-one-level-deep.md) | reference links stay one directory below `SKILL.md` | error |
 | [`description-has-trigger`](docs/rules/description-has-trigger.md) | `description` says *when* to use the skill | warn |
 | [`body-max-length`](docs/rules/body-max-length.md) | body stays short (progressive disclosure) | warn |
+| [`no-orphan-references`](docs/rules/no-orphan-references.md) | every `references/` file is linked from `SKILL.md` | warn |
 
-`recommended` fails on structural errors and nudges on quality with warnings. `strict` promotes every rule to `error`.
+**Reference file (`references/**/*.md`) rules:**
+
+| Rule | What it enforces | `recommended` |
+| --- | --- | --- |
+| [`descriptive-reference-filenames`](docs/rules/descriptive-reference-filenames.md) | reference files avoid generic names (`doc2.md`) | warn |
+| [`large-reference-toc`](docs/rules/large-reference-toc.md) | reference files > 300 lines carry a table of contents | warn |
+
+`recommended` fails on structural errors and nudges on quality with warnings. `strict` promotes every rule to `error`. The preset globs both `**/SKILL.md` and `**/references/**/*.md`.
 
 ### Opt-in rules
 

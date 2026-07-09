@@ -53,3 +53,17 @@ export function dirName(filename: string): string {
 export function isSkillFile(filename: string): boolean {
 	return basename(filename) === SKILL_FILENAME;
 }
+
+/**
+ * Whether the linted file is a bundled reference document — a `.md` file
+ * (other than `SKILL.md`) living under a `references/` directory.
+ */
+export function isReferenceFile(filename: string): boolean {
+	if (typeof filename !== "string" || !filename.endsWith(".md")) {
+		return false;
+	}
+	if (basename(filename) === SKILL_FILENAME) {
+		return false;
+	}
+	return filename.replace(/\\/g, "/").split("/").includes("references");
+}
