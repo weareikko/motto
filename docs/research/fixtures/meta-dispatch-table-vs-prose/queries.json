@@ -1,0 +1,44 @@
+[
+	{
+		"id": 1,
+		"text": "We just closed the books for March — can you reconcile the trial balance and confirm everything ties out?",
+		"expected": "ledger-close",
+		"note": "unambiguous"
+	},
+	{
+		"id": 2,
+		"text": "Compliance is asking for the March audit trail on all manual journal entries over $10k.",
+		"expected": "ledger-audit",
+		"note": "unambiguous"
+	},
+	{
+		"id": 3,
+		"text": "Can you check the March journal entries for anything that looks off before we finalize the books?",
+		"expected": "ledger-close",
+		"note": "deliberately ambiguous (ledger-close vs ledger-audit). Pre-registered answer was a judgment call ('before we finalize the books' ties it to closing) — 5/6 trials in the actual run leaned ledger-audit instead, consistently regardless of format, which the write-up treats as a defensible alternative reading rather than a model error. This field documents the original pre-registration, not an infallible ground truth."
+	},
+	{
+		"id": 4,
+		"text": "Recalculate today's delivery routes — driver 12 called in sick.",
+		"expected": "fleet-routing",
+		"note": "unambiguous"
+	},
+	{
+		"id": 5,
+		"text": "Truck 12 is due for its 50,000 mile service, can you get that scheduled?",
+		"expected": "fleet-maintenance",
+		"note": "unambiguous"
+	},
+	{
+		"id": 6,
+		"text": "Truck 12 has been falling behind on its delivery schedule the last few days — can you sort it out?",
+		"expected": "fleet-routing",
+		"note": "deliberately ambiguous (fleet-routing vs fleet-maintenance). 6/6 trials agreed with this answer regardless of format in the actual run."
+	},
+	{
+		"id": 7,
+		"text": "New hire starts Monday — please generate their onboarding packet.",
+		"expected": "onboarding-docs",
+		"note": "unambiguous control"
+	}
+]

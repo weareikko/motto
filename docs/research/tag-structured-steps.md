@@ -54,3 +54,13 @@ None. `procedural-has-steps` (checks for a markdown ordered list) is already the
 
 - Test procedures were short (4–5 steps). It's untested whether much longer or more deeply nested procedures (e.g. 20+ steps, multiple levels of nesting) shift this result — that would be a new, separate investigation, not an assumption to carry over.
 - The grading was step-count + short-label accuracy, not full end-to-end task execution fidelity (i.e., we tested "can the agent identify the steps," not "does the agent execute them correctly downstream"). A future test could measure execution fidelity directly.
+
+## Reproduce
+
+Fixture content (both cases, both formats) is checked in at [`fixtures/tag-structured-steps/`](fixtures/tag-structured-steps/). The exact reproduction script is [`scripts/tag-structured-steps.workflow.js`](scripts/tag-structured-steps.workflow.js) (fixture content is duplicated inline in the script since Workflow scripts have no filesystem access):
+
+```
+Workflow({ scriptPath: 'docs/research/scripts/tag-structured-steps.workflow.js' })
+```
+
+Grading is automatic (`topLevelStepCount === expectedCount`); the script logs a `summary` object with per-cell `{ n, correct }`. Raise the `N` constant at the top of the script for more statistical power than the original N=3.

@@ -59,3 +59,13 @@ This is the **opposite direction** from the `<steps><step>` investigation, where
 ## Resulting rule
 
 New, **opt-in** (not in `recommended`/`strict`, matching the confidence level): a `meta`-kind skill with several dispatch entries in prose gets a suggestion to consider a table. Kept structural and conservative — the rule only checks for the *presence* of a markdown table in the body, not semantic content, avoiding the kind of guessy heuristic the taxonomy design deliberately steered away from.
+
+## Reproduce
+
+Fixture content (both router formats, the 7 queries with pre-registered expected answers and notes) is checked in at [`fixtures/meta-dispatch-table-vs-prose/`](fixtures/meta-dispatch-table-vs-prose/). The exact reproduction script is [`scripts/meta-dispatch-table-vs-prose.workflow.js`](scripts/meta-dispatch-table-vs-prose.workflow.js) (fixture content is duplicated inline in the script since Workflow scripts have no filesystem access):
+
+```
+Workflow({ scriptPath: 'docs/research/scripts/meta-dispatch-table-vs-prose.workflow.js' })
+```
+
+The script logs a `summary` object with per-format, per-query correctness counts against the pre-registered answers in `queries.json`. Raise the `N` constant for more statistical power than the original N=3.
