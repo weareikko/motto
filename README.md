@@ -24,6 +24,7 @@ The linter targets the standard Claude Code skill format: `name` + `description`
 | [`no-multiple-h1`](docs/rules/no-multiple-h1.md) | at most one top-level `#` H1 in the body | error |
 | [`no-broken-relative-links`](docs/rules/no-broken-relative-links.md) | relative links/images resolve on disk | error |
 | [`refs-one-level-deep`](docs/rules/refs-one-level-deep.md) | reference links stay one directory below `SKILL.md` | error |
+| [`valid-allowed-tools`](docs/rules/valid-allowed-tools.md) | `allowed-tools`, if present, is a non-empty array of tool names | error |
 | [`description-has-trigger`](docs/rules/description-has-trigger.md) | `description` says *when* to use the skill | warn |
 | [`body-max-length`](docs/rules/body-max-length.md) | body stays short (progressive disclosure) | warn |
 | [`no-orphan-references`](docs/rules/no-orphan-references.md) | every `references/` file is linked from `SKILL.md` | warn |
@@ -44,6 +45,27 @@ Not enabled by any preset — the standard skill format does not require an H1, 
 | Rule | What it enforces |
 | --- | --- |
 | [`h1-matches-name`](docs/rules/h1-matches-name.md) | the body H1 corresponds to `name` |
+
+### Skill kinds (opt-in)
+
+A skill can declare what *kind* it is via `metadata.kind` in frontmatter (`procedural`, `reference`, `multi-domain`, `tool-wrapper`, or `meta` — see [the taxonomy](docs/design/skill-taxonomy-and-rules.md)). These rules only fire on an **explicit** declaration — never on a guess — so enabling them is safe even if most of your skills haven't declared a kind yet:
+
+| Rule | Fires when declared… | What it enforces |
+| --- | --- | --- |
+| [`procedural-has-steps`](docs/rules/procedural-has-steps.md) | `kind: procedural` | body contains an ordered (numbered) list |
+| [`reference-has-content`](docs/rules/reference-has-content.md) | `kind: reference` | `references/` has at least one file |
+| [`multi-domain-has-variants`](docs/rules/multi-domain-has-variants.md) | `kind: multi-domain` | `references/` has at least two files |
+
+```js
+{
+  files: ["**/SKILL.md"],
+  rules: {
+    "skill/procedural-has-steps": "warn",
+    "skill/reference-has-content": "warn",
+    "skill/multi-domain-has-variants": "warn",
+  },
+}
+```
 
 ## Install
 
