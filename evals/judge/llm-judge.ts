@@ -1,16 +1,22 @@
 /**
  * LLM judge for evals, routed through Cloudflare AI Gateway.
  *
- * Deliberately dependency-free: a direct HTTPS call to the gateway's
- * OpenAI-compatible chat/completions endpoint, so evals don't pull in a
- * provider SDK. The judge model is configurable so a benchmark can be scored
- * by a *different* model than the one under test (avoiding self-preference),
- * per the user's "different models and judges" requirement.
+ * Uses the same three-var convention as the other @ikko-dev projects
+ * (gitlab-review, c24n): `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` +
+ * `CLOUDFLARE_GATEWAY_ID`. Dependency-free — a direct call to the gateway's
+ * OpenAI-compatible endpoint, so evals don't pull a provider SDK. The judge
+ * model is configurable so a benchmark can be scored by a *different* model
+ * than the one under test (avoiding self-preference), per the project's
+ * "different models and judges" requirement.
  *
- * Required env (skip the judge cleanly if absent):
- *   CF_AI_GATEWAY_URL   e.g. https://gateway.ai.cloudflare.com/v1/<acct>/<gw>/compat
- *   CF_AI_GATEWAY_TOKEN  bearer token
- *   EVAL_JUDGE_MODEL     e.g. openai/gpt-5.4-mini  (default below)
+ * Model ids use the gateway's `provider/model` form, e.g. `openai/gpt-5.4-mini`
+ * or `anthropic/claude-haiku-4-5`.
+ *
+ * NOTE: the exact gateway auth header is documented but UNVERIFIED here (evals
+ * aren't run end-to-end in this environment — no keys, and the org spend limit
+ * is a factor). If a live run 401s, check whether your gateway expects the
+ * Cloudflare token in `cf-aig-authorization` instead of / in addition to
+ * `Authorization`; both are set below to cover the common cases.
  */
 
 const DEFAULT_JUDGE_MODEL = "openai/gpt-5.4-mini";
@@ -20,12 +26,28 @@ export interface JudgeVerdict {
 	rationale: string;
 }
 
+function accountId(): string {
+	return (process.env.CLOUDFLARE_ACCOUNT_ID ?? "").trim();
+}
+function gatewayId(): string {
+	return (process.env.CLOUDFLARE_GATEWAY_ID ?? "").trim();
+}
+function apiKey(): string {
+	return (process.env.CLOUDFLARE_API_KEY ?? "").trim();
+}
+
 export function judgeAvailable(): { available: boolean; reason?: string } {
-	if (!(process.env.CF_AI_GATEWAY_URL ?? "").trim())
-		return { available: false, reason: "CF_AI_GATEWAY_URL unset" };
-	if (!(process.env.CF_AI_GATEWAY_TOKEN ?? "").trim())
-		return { available: false, reason: "CF_AI_GATEWAY_TOKEN unset" };
+	if (!apiKey()) return { available: false, reason: "CLOUDFLARE_API_KEY unset" };
+	if (!accountId())
+		return { available: false, reason: "CLOUDFLARE_ACCOUNT_ID unset" };
+	if (!gatewayId())
+		return { available: false, reason: "CLOUDFLARE_GATEWAY_ID unset" };
 	return { available: true };
+}
+
+/** OpenAI-compatible chat/completions URL for the configured gateway. */
+function compatUrl(): string {
+	return `https://gateway.ai.cloudflare.com/v1/${accountId()}/${gatewayId()}/compat/chat/completions`;
 }
 
 /**
@@ -37,8 +59,7 @@ export async function judge(
 	candidate: string,
 	opts: { model?: string; timeoutMs?: number } = {},
 ): Promise<JudgeVerdict> {
-	const url = process.env.CF_AI_GATEWAY_URL!.replace(/\/$/, "");
-	const token = process.env.CF_AI_GATEWAY_TOKEN!;
+	const token = apiKey();
 	const model = opts.model ?? process.env.EVAL_JUDGE_MODEL ?? DEFAULT_JUDGE_MODEL;
 
 	const system =
@@ -51,11 +72,12 @@ export async function judge(
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? 30_000);
 	try {
-		const res = await fetch(`${url}/chat/completions`, {
+		const res = await fetch(compatUrl(), {
 			method: "POST",
 			headers: {
 				"content-type": "application/json",
 				authorization: `Bearer ${token}`,
+				"cf-aig-authorization": `Bearer ${token}`,
 			},
 			body: JSON.stringify({
 				model,
@@ -76,7 +98,8 @@ export async function judge(
 		};
 		const content = data.choices?.[0]?.message?.content ?? "";
 		const match = content.match(/\{[\s\S]*\}/);
-		if (!match) return { score: 0, rationale: `unparseable judge reply: ${content.slice(0, 120)}` };
+		if (!match)
+			return { score: 0, rationale: `unparseable judge reply: ${content.slice(0, 120)}` };
 		const parsed = JSON.parse(match[0]) as JudgeVerdict;
 		return { score: parsed.score === 1 ? 1 : 0, rationale: parsed.rationale ?? "" };
 	} finally {
