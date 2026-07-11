@@ -54,6 +54,6 @@ export const opencodeHarness: Harness = {
 		const text = typeof obj.text === "string" ? obj.text : stdout;
 		// File-read extraction is left generic; refine once the real output
 		// shape is confirmed against an installed opencode.
-		return { text, filesRead: [], raw };
+		return { text, filesRead: [], skillsInvoked: [], raw };
 	},
 };

@@ -46,6 +46,6 @@ export const codexHarness: Harness = {
 		}
 		const obj = raw as Record<string, unknown>;
 		const text = typeof obj.text === "string" ? obj.text : stdout;
-		return { text, filesRead: [], raw };
+		return { text, filesRead: [], skillsInvoked: [], raw };
 	},
 };

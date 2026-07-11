@@ -93,6 +93,6 @@ export const piHarness: Harness = {
 					: typeof obj.content === "string"
 						? obj.content
 						: stdout;
-		return { text, filesRead: extractFileReads(raw), raw };
+		return { text, filesRead: extractFileReads(raw), skillsInvoked: [], raw };
 	},
 };
