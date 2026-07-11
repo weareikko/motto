@@ -10,3 +10,10 @@ export * from "./harness/index";
 export * from "./runner";
 export * from "./config";
 export { judge, judgeAvailable, type JudgeVerdict } from "./judge/llm-judge";
+
+// Skill eval surface (Phase B).
+export * from "./skill/parse";
+export * from "./skill/contract";
+export * from "./metrics/cost";
+export * from "./metrics/behavioral";
+export * from "./report";
