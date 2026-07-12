@@ -27,54 +27,99 @@ export interface SkillContract {
 }
 
 /**
- * Trigger markers, longest-first so "use this skill when" wins over "use when".
- * Matched case-insensitively at a word boundary.
+ * Trigger markers that introduce a "when to use" clause. Matched
+ * case-insensitively and only at a sentence boundary (start of string or after
+ * `.!?…:;`), so a mid-claim "…a tool to use to…" cannot false-match a "use to"
+ * marker. English and French are both covered — the target corpus (a French
+ * studio's skills) writes cues as "À utiliser quand …" / "Déclencher quand …".
  */
 const TRIGGER_MARKERS = [
+	// English
 	"use this skill when",
 	"use this skill for",
 	"use this when",
 	"use this for",
+	"use when",
+	"use for",
+	"use to",
+	"use before",
+	"use after",
 	"useful when",
 	"useful for",
 	"invoke when",
 	"trigger when",
 	"apply when",
-	"use when",
-	"use for",
 	"when the user",
 	"when you need to",
 	"when asked to",
+	// French
+	"à utiliser quand",
+	"à utiliser lorsque",
+	"à utiliser pour",
+	"utiliser quand",
+	"utiliser lorsque",
+	"utiliser pour",
+	"à déclencher quand",
+	"déclencher quand",
+	"déclencher lorsque",
+	"à appeler quand",
+	"utile quand",
+	"utile pour",
+	"quand l'utilisateur",
+	"lorsque l'utilisateur",
 ];
 
-/** Find the earliest trigger marker in the description. */
+function escapeRegExp(s: string): string {
+	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Sentence terminators used to bound the trigger clause. */
+const SENTENCE_END = /[.!?…]\s|[.!?…]$/;
+
+/**
+ * Find the earliest trigger marker that begins a sentence. Anchoring to a
+ * boundary avoids matching a marker substring inside the capability claim.
+ */
 function findMarker(
 	description: string,
 ): { index: number; length: number } | null {
 	const lower = description.toLowerCase();
 	let best: { index: number; length: number } | null = null;
 	for (const marker of TRIGGER_MARKERS) {
-		const idx = lower.indexOf(marker);
-		if (idx === -1) continue;
-		// Keep the earliest match; on a tie, the longer marker.
+		const re = new RegExp(
+			`(?:^|[.!?…:;\\n]\\s*)${escapeRegExp(marker)}`,
+			"g",
+		);
+		const m = re.exec(lower);
+		if (!m) continue;
+		const index = m.index + m[0].length - marker.length; // start of the marker
 		if (
 			!best ||
-			idx < best.index ||
-			(idx === best.index && marker.length > best.length)
+			index < best.index ||
+			(index === best.index && marker.length > best.length)
 		) {
-			best = { index: idx, length: marker.length };
+			best = { index, length: marker.length };
 		}
 	}
 	return best;
 }
 
-/** Split a trigger clause into individual cue phrases. */
+/** The trigger clause runs from the marker to the end of its sentence. */
+function triggerClause(description: string, markerEnd: number): string {
+	const rest = description.slice(markerEnd);
+	const end = rest.search(SENTENCE_END);
+	return (end === -1 ? rest : rest.slice(0, end + 1)).trim();
+}
+
+/** Split a trigger clause into individual cue phrases (English + French). */
 function splitTriggers(clause: string): string[] {
 	return clause
-		.split(/[;.]|\n|,\s+or\s+|\s+or\s+|,\s+and\s+|\s+and\s+|,/i)
+		.split(
+			/[;.]|\n|,\s+(?:or|and|ou|et)\s+|\s+(?:or|and|ou|et)\s+|,/i,
+		)
 		.map((s) =>
 			s
-				.replace(/^\s*(?:to|the|a|an)\s+/i, "")
+				.replace(/^\s*(?:to|the|a|an|de|des|du|le|la|les|un|une|d')\s+/i, "")
 				.replace(/[.:;,\s]+$/, "")
 				.trim(),
 		)
@@ -109,8 +154,8 @@ export function deriveContract(description: string): SkillContract {
 	}
 
 	const claim = desc.slice(0, marker.index).replace(/[.\s]+$/, "").trim();
-	const triggerClause = desc.slice(marker.index + marker.length).trim();
-	const triggers = splitTriggers(triggerClause);
+	const clause = triggerClause(desc, marker.index + marker.length);
+	const triggers = splitTriggers(clause);
 
 	return {
 		claim,
