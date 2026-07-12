@@ -24,19 +24,18 @@
 
 import type { AgentEvent, AgentTool } from "@earendil-works/pi-agent-core";
 import { Agent } from "@earendil-works/pi-agent-core";
-import { createModels } from "@earendil-works/pi-ai";
 // `getEnvApiKey` lives in `env-api-keys.ts`, which the top-level `"."` entry
 // point does NOT re-export (verified against `dist/index.d.ts`) — only the
 // `"./compat"` subpath does (`dist/compat.d.ts`: `export * from
 // "./env-api-keys.ts"`). `"./compat"` is a real, documented `exports` entry
 // (see `package.json`), not a deep-import bypass.
 import { getEnvApiKey } from "@earendil-works/pi-ai/compat";
-// `providers/all` is a documented subpath export (see package.json `exports`)
-// carrying the built-in provider factories that the top-level `createModels()`
-// does *not* register on its own (verified in `models.js`/`providers/all.js`:
-// bare `createModels()` returns an empty registry — `builtinModels()` /
-// `builtinProviders()` are what wire up the real catalog).
-import { builtinProviders } from "@earendil-works/pi-ai/providers/all";
+// `providers/all` is a documented subpath export (see package.json `exports`).
+// Bare `createModels()` returns an empty registry (verified in
+// `models.js`/`providers/all.js`) — `builtinModels()` is the SDK's own helper
+// that registers every built-in provider onto a fresh `Models` collection, so
+// we call it directly instead of re-deriving the same wiring by hand.
+import { builtinModels } from "@earendil-works/pi-ai/providers/all";
 
 /** Split "provider/modelId" on the FIRST "/" — the id itself may contain slashes. */
 export function splitModel(spec: string): { provider: string; id: string } {
@@ -95,25 +94,12 @@ export interface RunPiAgentOptions {
 
 const DEFAULT_TIMEOUT_MS = 120_000;
 
-/**
- * A `Models` collection with every built-in provider registered — see the
- * `builtinProviders` import comment above for why this isn't just
- * `createModels()`.
- */
-function createModelsWithBuiltins() {
-	const models = createModels();
-	for (const provider of builtinProviders()) {
-		models.setProvider(provider);
-	}
-	return models;
-}
-
 // LIVE PATH UNVALIDATED — no API spend available at build time; verified only
 // via injected fake agent. This mirrors gitlab-review's `defaultCreateAgent`
 // (0.75.3) adapted for 0.80.6's `createModels().getModel(provider, id)`.
 function defaultCreateAgent(init: AgentFactoryInit): AgentLike {
 	const { provider, id } = splitModel(init.model);
-	const models = createModelsWithBuiltins();
+	const models = builtinModels();
 	const model = models.getModel(provider, id);
 	if (!model) {
 		throw new Error(
@@ -127,7 +113,7 @@ function defaultCreateAgent(init: AgentFactoryInit): AgentLike {
 			tools: init.tools as AgentTool[] | undefined,
 		},
 		getApiKey: getEnvApiKey,
-	}) as unknown as AgentLike;
+	});
 }
 
 /** Extract the trailing text content of the last non-empty assistant message. */
