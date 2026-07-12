@@ -51,20 +51,15 @@ export interface BehavioralReport {
 	promptCount: number;
 }
 
-/** Did the harness engage the skill on this run? */
-function skillFired(filesRead: string[], skill: ParsedSkill): boolean {
-	const targets = new Set<string>([
-		skill.path,
-		...skill.references.map((r) => r.absPath),
-	]);
-	return filesRead.some((f) => {
-		if (targets.has(f)) return true;
-		// filesRead may be relative or basename-only depending on the harness.
-		return (
-			f.endsWith("SKILL.md") ||
-			skill.references.some((r) => f.endsWith(r.relPath))
-		);
-	});
+/**
+ * Did the agent engage the skill on this run? The ground-truth signal is an
+ * explicit Skill invocation naming this skill (verified against live Claude
+ * Code output) — NOT a Read of the SKILL.md file.
+ */
+function skillFired(result: { skillsInvoked: string[] }, skill: ParsedSkill): boolean {
+	return result.skillsInvoked.some(
+		(s) => s === skill.name || s.endsWith(`/${skill.name}`),
+	);
 }
 
 /**
@@ -95,8 +90,10 @@ export async function runBehavioral(
 					prompt,
 					model: opts.model,
 					timeoutMs: opts.timeoutMs,
+					installSkillDir: skill.dir,
+					readOnly: true,
 				});
-				if (!skillFired(result.filesRead, skill)) continue;
+				if (!skillFired(result, skill)) continue;
 				fired++;
 				if (canJudge) {
 					const verdict = await judge(claimRubric, result.text, {

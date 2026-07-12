@@ -1,36 +1,64 @@
 /**
  * Anthropic Claude Code harness adapter.
  *
- * Headless invocation: `claude -p <prompt> --output-format json` prints a
- * single JSON envelope with the final `result` text, usage, and (in
- * stream-json) the tool calls. We use `--output-format json` and additionally
- * extract file reads from the transcript when present.
+ * Two run modes:
+ *
+ *  - Plain (`installSkillDir` unset): `claude -p <prompt> --output-format json`
+ *    — one JSON envelope with the final `result` text and usage.
+ *
+ *  - Skill-eval (`installSkillDir` set): the skill is staged into an isolated
+ *    temp project at `<tmp>/.claude/skills/<name>/` so the agent can actually
+ *    discover and trigger it, and we run with `--output-format stream-json` to
+ *    see the tool calls. A skill firing shows up as a `Skill` tool_use
+ *    (`{"skill":"<name>", …}`) — that, not a Read of SKILL.md, is the
+ *    trigger-fidelity signal (verified against Claude Code 2.1 output).
  */
 
-import { dirname } from "node:path";
+import { basename, dirname, join } from "node:path";
+import { cpSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 
 import type { Harness, HarnessResult, HarnessTask } from "./types";
 import { hasAnyEnv, onPath, runBin } from "./exec";
 
-function extractFileReads(raw: unknown): string[] {
-	// Claude's json output nests tool_use blocks; scan defensively for Read
-	// tool inputs regardless of exact schema version.
-	const files = new Set<string>();
-	const walk = (node: unknown): void => {
-		if (!node || typeof node !== "object") return;
-		const obj = node as Record<string, unknown>;
-		if (obj.type === "tool_use" && obj.name === "Read") {
-			const input = obj.input as Record<string, unknown> | undefined;
+export interface Extracted {
+	filesRead: string[];
+	skillsInvoked: string[];
+}
+
+/** Walk any nested JSON, collecting Read file paths and Skill invocations. */
+export function extractToolSignals(node: unknown, out: Extracted): void {
+	if (!node || typeof node !== "object") return;
+	const obj = node as Record<string, unknown>;
+	if (obj.type === "tool_use") {
+		const input = obj.input as Record<string, unknown> | undefined;
+		if (obj.name === "Read") {
 			const p = input?.file_path ?? input?.path;
-			if (typeof p === "string") files.add(p);
+			if (typeof p === "string") out.filesRead.push(p);
+		} else if (obj.name === "Skill") {
+			const s = input?.skill ?? input?.name ?? input?.command;
+			if (typeof s === "string") out.skillsInvoked.push(s);
 		}
-		for (const v of Object.values(obj)) {
-			if (Array.isArray(v)) v.forEach(walk);
-			else if (v && typeof v === "object") walk(v);
+	}
+	for (const v of Object.values(obj)) {
+		if (Array.isArray(v)) v.forEach((c) => extractToolSignals(c, out));
+		else if (v && typeof v === "object") extractToolSignals(v, out);
+	}
+}
+
+/** Parse a stream-json (JSONL) transcript into events, tolerating blank lines. */
+export function parseStreamJson(stdout: string): Record<string, unknown>[] {
+	const events: Record<string, unknown>[] = [];
+	for (const line of stdout.split("\n")) {
+		const t = line.trim();
+		if (!t) continue;
+		try {
+			events.push(JSON.parse(t) as Record<string, unknown>);
+		} catch {
+			// ignore non-JSON noise
 		}
-	};
-	walk(raw);
-	return [...files];
+	}
+	return events;
 }
 
 export const claudeHarness: Harness = {
@@ -48,38 +76,76 @@ export const claudeHarness: Harness = {
 	},
 
 	async run(task: HarnessTask): Promise<HarnessResult> {
-		const cwd = task.cwd ?? dirname(task.skillPath);
-		const args = ["-p", task.prompt, "--output-format", "json"];
-		if (task.model) args.push("--model", task.model);
-		const { stdout } = await runBin("claude", args, {
-			cwd,
-			timeoutMs: task.timeoutMs,
-		});
-		let raw: unknown;
-		try {
-			raw = JSON.parse(stdout);
-		} catch {
-			raw = { result: stdout };
+		const install = task.installSkillDir;
+		let cwd = task.cwd ?? dirname(task.skillPath);
+		let tempProject: string | undefined;
+
+		if (install) {
+			const name = basename(install);
+			tempProject = mkdtempSync(join(tmpdir(), "motto-skill-"));
+			cpSync(install, join(tempProject, ".claude", "skills", name), {
+				recursive: true,
+			});
+			cwd = tempProject;
 		}
-		const env = raw as Record<string, unknown>;
-		const text =
-			typeof env.result === "string"
-				? env.result
-				: typeof env.text === "string"
-					? env.text
-					: stdout;
-		const usageObj = env.usage as Record<string, number> | undefined;
-		return {
-			text,
-			filesRead: extractFileReads(raw),
-			usage: usageObj
-				? {
-						input: usageObj.input_tokens,
-						output: usageObj.output_tokens,
-					}
-				: undefined,
-			raw,
-		};
+
+		try {
+			const streaming = Boolean(install);
+			const args = ["-p", task.prompt];
+			if (streaming) args.push("--output-format", "stream-json", "--verbose");
+			else args.push("--output-format", "json");
+			if (task.model) args.push("--model", task.model);
+			if (task.readOnly)
+				args.push("--disallowedTools", "Bash", "Write", "Edit", "WebFetch");
+
+			const { stdout } = await runBin("claude", args, {
+				cwd,
+				timeoutMs: task.timeoutMs,
+			});
+
+			const signals: Extracted = { filesRead: [], skillsInvoked: [] };
+			let text = stdout;
+			let usageObj: Record<string, number> | undefined;
+
+			if (streaming) {
+				const events = parseStreamJson(stdout);
+				extractToolSignals(events, signals);
+				const resultEvent = [...events]
+					.reverse()
+					.find((e) => e.type === "result");
+				if (resultEvent && typeof resultEvent.result === "string")
+					text = resultEvent.result;
+				usageObj = resultEvent?.usage as Record<string, number> | undefined;
+			} else {
+				let raw: unknown;
+				try {
+					raw = JSON.parse(stdout);
+				} catch {
+					raw = { result: stdout };
+				}
+				extractToolSignals(raw, signals);
+				const env = raw as Record<string, unknown>;
+				text =
+					typeof env.result === "string"
+						? env.result
+						: typeof env.text === "string"
+							? env.text
+							: stdout;
+				usageObj = env.usage as Record<string, number> | undefined;
+			}
+
+			return {
+				text,
+				filesRead: [...new Set(signals.filesRead)],
+				skillsInvoked: [...new Set(signals.skillsInvoked)],
+				usage: usageObj
+					? { input: usageObj.input_tokens, output: usageObj.output_tokens }
+					: undefined,
+				raw: stdout,
+			};
+		} finally {
+			if (tempProject) rmSync(tempProject, { recursive: true, force: true });
+		}
 	},
 };
 

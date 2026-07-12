@@ -23,6 +23,20 @@ export interface HarnessTask {
 	cwd?: string;
 	/** Hard wall-clock cap in ms. */
 	timeoutMs?: number;
+	/**
+	 * Directory of a skill to *install* before running, so the agent can
+	 * actually discover and trigger it (the harness stages it into an isolated
+	 * temp project — e.g. `.claude/skills/<name>/` for Claude Code). Required
+	 * for trigger-fidelity: without installation the skill is never offered to
+	 * the agent and can never fire.
+	 */
+	installSkillDir?: string;
+	/**
+	 * Disable mutating/side-effecting tools (Bash/Write/Edit/…). Used for
+	 * trigger fidelity, where we only need to observe that the skill fires, not
+	 * let a triggered skill execute against the temp project.
+	 */
+	readOnly?: boolean;
 }
 
 export interface HarnessResult {
@@ -31,6 +45,10 @@ export interface HarnessResult {
 	/** Relative/absolute paths the agent read via its file tools, if the
 	 *  harness exposes tool calls in its output. Empty if not extractable. */
 	filesRead: string[];
+	/** Names of skills the agent explicitly invoked (via a Skill tool call).
+	 *  This is the ground-truth trigger signal — a skill firing shows up as a
+	 *  Skill invocation, not as a Read of its SKILL.md. Empty if none/unknown. */
+	skillsInvoked: string[];
 	/** Token usage if the harness reports it. */
 	usage?: { input?: number; output?: number; total?: number };
 	/** Raw parsed harness output, for debugging / richer assertions. */
