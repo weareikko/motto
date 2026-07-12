@@ -35,6 +35,7 @@ motto eval <skill>        # cost + contract (always) + behavioral (when a harnes
 motto eval <skill> --cost-only    # deterministic only: no agent runs, no credentials
 motto contract <skill>    # print the contract derived from the description
 motto doctor              # which harnesses + judge are runnable right now (zero cost)
+motto mcp                 # run motto's deterministic tools (cost, contract, band) as an MCP stdio server
 ```
 
 `<skill>` is a skill directory or a `SKILL.md` path. Flags on `eval`: `--harness <ids>` (comma-separated), `--model <id>`, `--n <trials>` (default 20), `--json`.

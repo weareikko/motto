@@ -17,3 +17,7 @@ export * from "./skill/contract";
 export * from "./metrics/cost";
 export * from "./metrics/behavioral";
 export * from "./report";
+
+// Statistics (CI-based reliability banding) + the MCP server surface.
+export * from "./stats/index";
+export { createMottoServer, startStdio } from "./mcp/server";

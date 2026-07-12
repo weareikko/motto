@@ -6,6 +6,7 @@
  *                        fidelity (when a harness + RUN_EVALS are present)
  *   motto contract <skill>  print the contract derived from the description
  *   motto doctor         report harness + judge availability (zero cost)
+ *   motto mcp            run motto's deterministic tools as an MCP stdio server
  *
  * Cost and contract derivation are deterministic and need no credentials, so
  * `motto eval --cost-only` is useful with zero setup. Behavioral metrics cost
@@ -21,6 +22,7 @@ import { buildReport, formatReport, formatContract } from "./report";
 import { detectAll, availableHarnesses } from "./harness/index";
 import { judgeAvailable } from "./judge/llm-judge";
 import { evalsEnabled } from "./config";
+import { startStdio } from "./mcp/server";
 
 // Injected by Vite at build time; falls back when run directly via tsx (dev).
 const VERSION =
@@ -129,6 +131,16 @@ const doctorCmd = defineCommand({
 	},
 });
 
+const mcpCmd = defineCommand({
+	meta: {
+		name: "mcp",
+		description: "Run motto's deterministic tools (cost, contract, band) as an MCP stdio server.",
+	},
+	async run() {
+		await startStdio();
+	},
+});
+
 const main = defineCommand({
 	meta: {
 		name: "motto",
@@ -140,6 +152,7 @@ const main = defineCommand({
 		eval: evalCmd,
 		contract: contractCmd,
 		doctor: doctorCmd,
+		mcp: mcpCmd,
 	},
 });
 
