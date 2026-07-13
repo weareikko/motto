@@ -45,6 +45,23 @@ export function splitModel(spec: string): { provider: string; id: string } {
 }
 
 /**
+ * Substitute `{ENV_VAR}` placeholders in a string from `env`. pi-ai's gateway
+ * providers ship a templated baseUrl (e.g. the `cloudflare-ai-gateway` models'
+ * `https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic`)
+ * and do NOT resolve it themselves through the `builtinModels()` path — an
+ * unresolved template yields a Cloudflare 401 ("Expected path prefix
+ * /v1/:accountTag/:gatewayId"). We fill the placeholders from the environment
+ * before constructing the agent. A missing var resolves to "" (fails loudly at
+ * request time rather than silently pointing somewhere wrong).
+ */
+export function substituteEnvPlaceholders(
+	value: string,
+	env: NodeJS.ProcessEnv = process.env,
+): string {
+	return value.replace(/\{([A-Z0-9_]+)\}/g, (_m, name: string) => env[name] ?? "");
+}
+
+/**
  * The subset of the real pi `Agent` this driver depends on: `subscribe` to
  * observe lifecycle events, `prompt` to start a turn (confirmed as the
  * send/await mechanism in `gitlab-review.ts`'s `runAgentToCompletion`, which
@@ -94,9 +111,13 @@ export interface RunPiAgentOptions {
 
 const DEFAULT_TIMEOUT_MS = 120_000;
 
-// LIVE PATH UNVALIDATED — no API spend available at build time; verified only
-// via injected fake agent. This mirrors gitlab-review's `defaultCreateAgent`
-// (0.75.3) adapted for 0.80.6's `createModels().getModel(provider, id)`.
+// LIVE PATH VALIDATED (2026-07) against a real model — router trigger on the
+// `sentry` skill via `cloudflare-ai-gateway/claude-haiku-4-5` fired correctly
+// (positive) / stayed silent (negative). Mirrors gitlab-review's
+// `defaultCreateAgent` (0.75.3) adapted for 0.80.6's
+// `createModels().getModel(provider, id)`, plus baseUrl placeholder
+// substitution (the CF gateway account/gateway path segments pi-ai leaves
+// unresolved). Unit tests still exercise only the injected fake agent.
 function defaultCreateAgent(init: AgentFactoryInit): AgentLike {
 	const { provider, id } = splitModel(init.model);
 	const models = builtinModels();
@@ -105,6 +126,14 @@ function defaultCreateAgent(init: AgentFactoryInit): AgentLike {
 		throw new Error(
 			`Unknown pi model "${init.model}" (provider "${provider}", id "${id}")`,
 		);
+	}
+	// Resolve any `{ENV_VAR}` placeholders in the (possibly templated) baseUrl —
+	// notably the cloudflare-ai-gateway account/gateway path segments, which
+	// pi-ai does not fill in itself. `builtinModels()` returns a fresh registry
+	// per call, so mutating this model instance is local to this run.
+	const withUrl = model as { baseUrl?: string };
+	if (typeof withUrl.baseUrl === "string" && withUrl.baseUrl.includes("{")) {
+		withUrl.baseUrl = substituteEnvPlaceholders(withUrl.baseUrl);
 	}
 	return new Agent({
 		initialState: {
@@ -179,6 +208,19 @@ export async function runPiAgent(
 					return;
 				}
 				if (event.type !== "agent_end") return;
+				// Surface a failed turn instead of masking it as empty output: the
+				// last assistant message carries stopReason "error" / errorMessage
+				// when the provider call failed (auth, bad URL, quota, …).
+				const assistants = event.messages.filter(
+					(m) => (m as { role?: string }).role === "assistant",
+				) as Array<{ stopReason?: string; errorMessage?: string }>;
+				const last = assistants[assistants.length - 1];
+				if (last?.stopReason === "error" || last?.errorMessage) {
+					rejectPromise(
+						new Error(`Pi agent error: ${last.errorMessage ?? "unknown error"}`),
+					);
+					return;
+				}
 				text = extractLastAssistantText(event.messages);
 				resolvePromise();
 			});

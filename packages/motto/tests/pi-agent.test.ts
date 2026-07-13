@@ -3,6 +3,7 @@ import type { AgentEvent } from "@earendil-works/pi-agent-core";
 
 import {
 	splitModel,
+	substituteEnvPlaceholders,
 	runPiAgent,
 	type AgentFactory,
 	type AgentFactoryInit,
@@ -58,6 +59,28 @@ describe("splitModel", () => {
 
 	it("handles a bare model with no provider", () => {
 		expect(splitModel("gpt-4o")).toEqual({ provider: "gpt-4o", id: "" });
+	});
+});
+
+describe("substituteEnvPlaceholders", () => {
+	it("fills {ENV_VAR} placeholders from the provided env", () => {
+		const url = substituteEnvPlaceholders(
+			"https://gateway.ai.cloudflare.com/v1/{CLOUDFLARE_ACCOUNT_ID}/{CLOUDFLARE_GATEWAY_ID}/anthropic",
+			{ CLOUDFLARE_ACCOUNT_ID: "acct123", CLOUDFLARE_GATEWAY_ID: "motto" },
+		);
+		expect(url).toBe(
+			"https://gateway.ai.cloudflare.com/v1/acct123/motto/anthropic",
+		);
+	});
+
+	it("resolves a missing var to empty string (fails loudly downstream, not silently misrouted)", () => {
+		expect(substituteEnvPlaceholders("/v1/{MISSING}/x", {})).toBe("/v1//x");
+	});
+
+	it("leaves a string without placeholders unchanged", () => {
+		expect(substituteEnvPlaceholders("https://api.example.com/v1", {})).toBe(
+			"https://api.example.com/v1",
+		);
 	});
 });
 
@@ -133,6 +156,34 @@ describe("runPiAgent", () => {
 		expect(result.skillsInvoked).toEqual([]);
 		expect(result.filesRead).toEqual([]);
 		expect(result.text).toBe("The capital of France is Paris.");
+	});
+
+	it("rejects when the final assistant turn ended in an error (not a silent empty result)", async () => {
+		const events: AgentEvent[] = [
+			{ type: "turn_start" },
+			{
+				type: "agent_end",
+				messages: [
+					{ role: "user", content: [] },
+					{
+						role: "assistant",
+						stopReason: "error",
+						errorMessage:
+							"401 Invalid request path. Expected path prefix /v1/:accountTag/:gatewayId",
+						content: [],
+					},
+				] as never,
+			},
+		];
+
+		await expect(
+			runPiAgent({
+				model: "cloudflare-ai-gateway/claude-haiku-4-5",
+				systemPrompt: "system",
+				prompt: "hi",
+				createAgent: scriptedAgentFactory(events),
+			}),
+		).rejects.toThrow(/Pi agent error.*401/);
 	});
 
 	it("passes the composed systemPrompt and model spec through to the agent factory", async () => {
