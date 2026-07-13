@@ -26,3 +26,6 @@ export { createMottoServer, startStdio } from "./mcp/server";
 export * from "./priors/index";
 export * from "./harness/pi-agent";
 export * from "./trigger/router";
+
+// Trigger-fidelity SWEEP bench (skill × model × prior).
+export * from "./bench/index";

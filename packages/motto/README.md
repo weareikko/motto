@@ -34,11 +34,25 @@ npm i -g @ikko-dev/motto   # (not yet published — see Status)
 motto eval <skill>        # cost + contract (always) + behavioral (when a harness is present)
 motto eval <skill> --cost-only    # deterministic only: no agent runs, no credentials
 motto contract <skill>    # print the contract derived from the description
+motto bench <skill...> --models <ids>   # sweep trigger fidelity across skills × models × priors. SPENDS.
 motto doctor              # which harnesses + judge are runnable right now (zero cost)
 motto mcp                 # run motto's deterministic tools (cost, contract, band) as an MCP stdio server
 ```
 
 `<skill>` is a skill directory or a `SKILL.md` path. Flags on `eval`: `--harness <ids>` (comma-separated), `--model <id>`, `--n <trials>` (default 20), `--json`.
+
+## `motto bench` — cross-model × prior trigger-fidelity sweep
+
+Where `motto eval` measures one skill against one harness, `motto bench` sweeps the **router-mode** trigger probe (`measureTriggerRouter`, same probe `eval`'s behavioral runner uses) across every (skill × model × prior) cell you ask for, deriving each skill's positive prompts from its own description contract. Each cell's fire rate is banded via `motto`'s Wilson-interval stats (`skill_cost`/`skill_contract`/`score_band` under the hood), so results read as a rate + confidence band, never a bare pass/fail.
+
+```sh
+motto bench skills/a skills/b --models=cloudflare-ai-gateway/claude-haiku-4-5,cloudflare-ai-gateway/claude-fable-5 \
+  --priors=baseline,calibration,orchestration --n=5 --max-prompts=2
+```
+
+`--models` is required: comma-separated `provider/modelId` specs (same notation as `eval --model`). `--priors` defaults to `baseline,calibration,orchestration`; `--n` (trials per cell) defaults to 5; `--max-prompts` (positive prompts swept per skill) defaults to 2. `--json` emits the structured `BenchReport` instead of the text table.
+
+**This is a spend command** — it makes one live model call per trial (`totalCalls` in the report is exactly that count) and gates on `motto doctor`-equivalent credential detection before making any call. The sweep logic itself (`packages/motto/src/bench/`) is exercised deterministically in CI against a fake agent factory — zero network calls, zero spend — and only a human running `motto bench` for real against live credentials produces live numbers.
 
 ## The three metrics
 
