@@ -21,3 +21,8 @@ export * from "./report";
 // Statistics (CI-based reliability banding) + the MCP server surface.
 export * from "./stats/index";
 export { createMottoServer, startStdio } from "./mcp/server";
+
+// Behavioral priors + the programmatic Pi driver + router-mode trigger fidelity.
+export * from "./priors/index";
+export * from "./harness/pi-agent";
+export * from "./trigger/router";

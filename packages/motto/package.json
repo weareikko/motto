@@ -51,6 +51,9 @@
   },
   "dependencies": {
     "@anthropic-ai/tokenizer": "^0.0.4",
+    "@earendil-works/pi-agent-core": "^0.80.6",
+    "@earendil-works/pi-ai": "^0.80.6",
+    "@earendil-works/pi-coding-agent": "^0.80.6",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "citty": "^0.2.2",
     "yaml": "^2.9.0",
