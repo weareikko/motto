@@ -13,7 +13,10 @@
  * money and self-skip cleanly when a harness/judge/RUN_EVALS is absent.
  */
 
+import { dirname, resolve as resolvePath } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineCommand, runMain } from "citty";
+import { config as loadDotenv } from "dotenv";
 import { parseSkill } from "./skill/parse";
 import { deriveContract } from "./skill/contract";
 import { measureCost } from "./metrics/cost";
@@ -23,6 +26,26 @@ import { detectAll, availableHarnesses } from "./harness/index";
 import { judgeAvailable } from "./judge/llm-judge";
 import { evalsEnabled } from "./config";
 import { startStdio } from "./mcp/server";
+import { piDetect } from "./harness/pi-agent";
+import { runBench, formatBenchReport } from "./bench/index";
+
+// Load the monorepo-root `.env` so provider creds (ANTHROPIC_API_KEY, the
+// Cloudflare AI Gateway vars, …) are present for spend commands (`bench`)
+// without requiring the caller to have sourced it themselves. Mirrors
+// `vite.eval.config.ts` / `evals/setup.ts`'s loading of the same file.
+//
+// Deliberately NOT `new URL("../../../.env", import.meta.url)`: Vite's build
+// special-cases that exact literal-relative-URL idiom as a static asset
+// reference. Since `.env` sits outside the package root, Vite inlines its
+// *actual contents* as a base64 `data:` URL baked into `dist/cli.js` (a real
+// secret leak into the published package) and `fileURLToPath` then throws on
+// the non-`file:` URL at runtime. Computing the path from
+// `fileURLToPath(import.meta.url)` + `node:path` avoids the special-cased
+// pattern entirely, so the path is resolved at runtime instead of inlined at
+// build time.
+loadDotenv({
+	path: resolvePath(dirname(fileURLToPath(import.meta.url)), "../../../.env"),
+});
 
 // Injected by Vite at build time; falls back when run directly via tsx (dev).
 const VERSION =
@@ -131,6 +154,85 @@ const doctorCmd = defineCommand({
 	},
 });
 
+const DEFAULT_BENCH_PRIORS = "baseline,calibration,orchestration";
+
+const benchCmd = defineCommand({
+	meta: {
+		name: "bench",
+		description:
+			"Sweep trigger fidelity for one or more skills across models × priors. SPENDS: makes a live model call per trial.",
+	},
+	args: {
+		skill: {
+			type: "positional",
+			required: true,
+			description: "Path(s) to a skill directory or its SKILL.md",
+		},
+		models: {
+			type: "string",
+			required: true,
+			description:
+				'Comma-separated "provider/modelId" specs, e.g. "cloudflare-ai-gateway/claude-haiku-4-5,cloudflare-ai-gateway/claude-fable-5"',
+		},
+		priors: {
+			type: "string",
+			description: `Comma-separated prior ids (default: "${DEFAULT_BENCH_PRIORS}")`,
+			default: DEFAULT_BENCH_PRIORS,
+		},
+		n: {
+			type: "string",
+			description: "Trials per (skill × model × prior × prompt) cell (default 5)",
+			default: "5",
+		},
+		"max-prompts": {
+			type: "string",
+			description: "Cap on positive prompts swept per skill (default 2)",
+			default: "2",
+		},
+		json: { type: "boolean", description: "Emit JSON instead of text", default: false },
+	},
+	async run({ args }) {
+		// This is a spend command: only reach the network when creds exist and
+		// the user explicitly invoked `motto bench`. `piDetect()` is a
+		// zero-network credential check — no call is made before this gate.
+		const detected = await piDetect();
+		if (!detected.available) {
+			console.error(
+				`motto bench: cannot run — ${detected.reason ?? "no provider credentials detected"}.`,
+			);
+			process.exitCode = 1;
+			return;
+		}
+
+		// citty's positional-arg binding does not remove consumed values from
+		// `args._` — it stays the full raw positional list (every skill path the
+		// user passed), so it — not `args.skill` alone — is the source of truth
+		// for "motto bench <skill...>".
+		const skillPaths =
+			Array.isArray(args._) && args._.length > 0
+				? args._.map(String)
+				: [args.skill];
+		const models = args.models.split(",").map((s) => s.trim()).filter(Boolean);
+		const priorIds = args.priors.split(",").map((s) => s.trim()).filter(Boolean);
+		const n = Math.max(1, Number.parseInt(args.n, 10) || 5);
+		const maxPromptsPerSkill = Math.max(1, Number.parseInt(args["max-prompts"], 10) || 2);
+
+		const report = await runBench({
+			skillPaths,
+			models,
+			priorIds,
+			n,
+			maxPromptsPerSkill,
+		});
+
+		if (args.json) {
+			console.log(JSON.stringify(report, null, 2));
+			return;
+		}
+		console.log(formatBenchReport(report));
+	},
+});
+
 const mcpCmd = defineCommand({
 	meta: {
 		name: "mcp",
@@ -151,6 +253,7 @@ const main = defineCommand({
 	subCommands: {
 		eval: evalCmd,
 		contract: contractCmd,
+		bench: benchCmd,
 		doctor: doctorCmd,
 		mcp: mcpCmd,
 	},
