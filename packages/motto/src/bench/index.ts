@@ -44,8 +44,12 @@ export interface BenchCell {
 	prior: string;
 	/** Trials where the router agent fired `use_skill` for this skill. */
 	fired: number;
-	/** Total trials for this cell (positivePrompts-for-skill × n). */
+	/** Total trials attempted for this cell (positivePrompts-for-skill × n). */
 	trials: number;
+	/** Trials that threw (auth/rate-limit/etc.) and were excluded from the band. */
+	errored: number;
+	/** First error message seen in this cell, if any (for diagnosis). */
+	errorSample?: string;
 	band: string;
 	lo: number;
 	hi: number;
@@ -89,28 +93,44 @@ export async function runBench(config: BenchConfig): Promise<BenchReport> {
 			for (const priorId of config.priorIds) {
 				let fired = 0;
 				let trials = 0;
+				let errored = 0;
+				let errorSample: string | undefined;
 				for (const prompt of prompts) {
 					for (let t = 0; t < config.n; t++) {
 						trials++;
 						totalCalls++;
-						const result = await measureTriggerRouter({
-							skill,
-							prompt,
-							priorId,
-							model,
-							createAgent: config.createAgent,
-						});
-						if (result.fired) fired++;
+						// A single failing trial (auth, rate-limit, provider blip)
+						// must not abort the whole sweep — record it and carry on,
+						// so a long run's other cells still yield numbers.
+						try {
+							const result = await measureTriggerRouter({
+								skill,
+								prompt,
+								priorId,
+								model,
+								createAgent: config.createAgent,
+							});
+							if (result.fired) fired++;
+						} catch (err) {
+							errored++;
+							errorSample ??=
+								err instanceof Error ? err.message : String(err);
+						}
 					}
 				}
-				const b = band(fired, trials);
+				// Band over SUCCESSFUL trials only — errored trials are neither
+				// fire nor no-fire, so excluding them keeps the rate honest.
+				const scored = trials - errored;
+				const b = band(fired, scored);
 				cells.push({
 					skill: skill.name,
 					model,
 					prior: priorId,
 					fired,
 					trials,
-					band: b.band,
+					errored,
+					errorSample,
+					band: scored === 0 ? "uncertain" : b.band,
 					lo: b.lo,
 					hi: b.hi,
 				});
@@ -151,8 +171,12 @@ export function formatBenchReport(report: BenchReport): string {
 	for (const [skill, cells] of bySkill) {
 		lines.push("", skill);
 		for (const cell of cells) {
+			const scored = cell.trials - cell.errored;
+			const errFlag = cell.errored
+				? `  ⚠ ${cell.errored} errored${cell.errorSample ? ` (${cell.errorSample.slice(0, 60)})` : ""}`
+				: "";
 			lines.push(
-				`  ${cell.model.padEnd(28)} ${cell.prior.padEnd(13)} ${String(cell.fired).padStart(3)}/${String(cell.trials).padEnd(3)} ${cell.band}`,
+				`  ${cell.model.padEnd(28)} ${cell.prior.padEnd(13)} ${String(cell.fired).padStart(3)}/${String(scored).padEnd(3)} ${cell.band}${errFlag}`,
 			);
 		}
 	}

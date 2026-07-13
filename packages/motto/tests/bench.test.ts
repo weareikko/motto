@@ -71,6 +71,18 @@ function skillNameFromSystemPrompt(systemPrompt: string): string {
 	return match?.[1] ?? "";
 }
 
+/** A factory whose every run throws — models a provider auth/rate-limit error. */
+function throwingAgentFactory(message: string): AgentFactory {
+	return (): AgentLike => ({
+		subscribe() {
+			return () => {};
+		},
+		async prompt() {
+			throw new Error(message);
+		},
+	});
+}
+
 // Fixture skill directories, written once for the whole suite.
 let dir: string;
 let alphaPath: string; // one positive prompt (no "use when" cue)
@@ -120,6 +132,25 @@ describe("runBench", () => {
 		expect(cell.trials).toBe(100);
 		expect(cell.fired).toBe(100);
 		expect(cell.band).toBe("always");
+	});
+
+	it("tolerates a failing trial: records `errored`, does not abort the sweep, bands 'uncertain' when all trials error", async () => {
+		const report = await runBench({
+			skillPaths: [alphaPath, multiPath],
+			models: ["anthropic/claude-opus-4-8"],
+			priorIds: ["baseline"],
+			n: 3,
+			createAgent: throwingAgentFactory("401 x-api-key header is required"),
+		});
+
+		// The sweep completed for BOTH skills despite every call throwing.
+		expect(report.cells.length).toBe(2);
+		for (const cell of report.cells) {
+			expect(cell.errored).toBe(cell.trials);
+			expect(cell.fired).toBe(0);
+			expect(cell.band).toBe("uncertain"); // 0 scored trials -> no honest band
+			expect(cell.errorSample).toMatch(/x-api-key/);
+		}
 	});
 
 	it("a skill that never fires lands in the 'rarely' band", async () => {

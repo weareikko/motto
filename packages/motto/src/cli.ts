@@ -45,6 +45,9 @@ import { runBench, formatBenchReport } from "./bench/index";
 // build time.
 loadDotenv({
 	path: resolvePath(dirname(fileURLToPath(import.meta.url)), "../../../.env"),
+	// dotenv v17 prints an "injected env" banner to stdout by default, which
+	// corrupts `motto bench --json` (and any piped output). Silence it.
+	quiet: true,
 });
 
 // Injected by Vite at build time; falls back when run directly via tsx (dev).
