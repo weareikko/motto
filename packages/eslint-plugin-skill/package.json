@@ -1,6 +1,6 @@
 {
   "name": "@weareikko/eslint-plugin-skill",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
   "keywords": [
     "eslint",

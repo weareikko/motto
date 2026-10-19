@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file. Each pull r
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.1 - 2026-10-19
+
+### Changed
+
+- Publish `@weareikko/eslint-plugin-skill` with an npm provenance attestation, now that the repository is public ([#32])
+
+### Fixed
+
+- Write the `skill-check-refs` bin path without a leading `./`, so `npm publish` no longer warns that it rewrote it ([#32])
+
+[#32]: https://github.com/weareikko/motto/pull/32
+
 ## 0.1.0 - 2026-10-19
 
 ### Added
