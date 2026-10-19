@@ -159,3 +159,7 @@ const { duplicates, divergences } = analyzeSkills([
 ```
 
 Run the plugin with ESLint. oxlint runs ESLint-compatible JS plugins only on the JavaScript and TypeScript files it parses; it does not lint Markdown, so it does not see `SKILL.md`.
+
+## Changelog
+
+The changes are in the [`CHANGELOG.md`](https://github.com/weareikko/motto/blob/main/CHANGELOG.md) of the repository: each pull request adds a fragment in `.changelog/`, and each merge into `main` folds them into a new release with [`@weareikko/changelog`](https://github.com/weareikko/changelog).

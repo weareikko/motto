@@ -33,3 +33,5 @@ npm run build        # all packages
 ```
 
 Node ≥ 20, ESM, TypeScript, Vite (library builds), Vitest. See each package's README for specifics; skill evals need credentials — copy [`.env.example`](.env.example) to `.env`.
+
+Each pull request adds a changelog fragment in [`.changelog/`](.changelog), and each merge into `main` releases what the fragments describe with [`@weareikko/changelog`](https://github.com/weareikko/changelog) (see [CONTRIBUTING.md](CONTRIBUTING.md#changelog-and-releases) and [CHANGELOG.md](CHANGELOG.md)).
