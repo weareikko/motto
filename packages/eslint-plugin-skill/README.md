@@ -124,3 +124,36 @@ npx skill-check-refs .
 ```
 
 It groups sibling skills (by default, those sharing a plugin's `skills/` directory), hashes their `references/**/*.md` files, and reports **duplicates** (byte-identical across skills — a maintenance burden) and **divergences** (same filename, different content — a silent correctness hazard, and the only case that fails CI by default). See [`docs/check-refs.md`](docs/check-refs.md) for options (`--near-duplicates`, `--scope`, `--ignore`) and an example CI workflow at [`configs/check-refs.workflow.yml`](configs/check-refs.workflow.yml).
+
+## Skills held in memory
+
+A host that keeps its skills off disk (a database, a remote store) lints them with ESLint's `Linter` and passes every file of the skills in the shared setting `settings.skill.files`, a map from path to content. The rules that look past the linted file (`no-broken-relative-links`, `no-orphan-references`, the `kind` rules) then read that map instead of the disk. A flat config matches only files under the linter's `cwd`, so the virtual root is the `cwd`:
+
+```js
+import { Linter } from "eslint";
+import skill from "@ikko-dev/eslint-plugin-skill";
+
+const files = {
+	"/skills/demo/SKILL.md": skillMd,
+	"/skills/demo/references/query.md": queryMd,
+};
+
+const messages = new Linter({ cwd: "/skills" }).verify(
+	files["/skills/demo/SKILL.md"],
+	[skill.configs.recommended, { settings: { skill: { files } } }],
+	{ filename: "/skills/demo/SKILL.md" },
+);
+```
+
+The cross-skill analysis has the same in-memory entry point, `analyzeSkills` from `@ikko-dev/eslint-plugin-skill/dedup`:
+
+```js
+import { analyzeSkills } from "@ikko-dev/eslint-plugin-skill/dedup";
+
+const { duplicates, divergences } = analyzeSkills([
+	{ name: "skill-a", references: [{ relPath: "tone.md", content: toneA }] },
+	{ name: "skill-b", references: [{ relPath: "tone.md", content: toneB }] },
+]);
+```
+
+Run the plugin with ESLint. oxlint runs ESLint-compatible JS plugins only on the JavaScript and TypeScript files it parses; it does not lint Markdown, so it does not see `SKILL.md`.

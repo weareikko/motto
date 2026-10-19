@@ -17,6 +17,16 @@ export interface ReferenceFile {
 	raw: string;
 }
 
+/** One skill held in memory, as `analyzeSkills` takes it. */
+export interface SkillReferences {
+	/** The skill's name; it stands for the skill directory in the findings. */
+	name: string;
+	/** Comparison scope. Skills are compared only with skills of the same scope. */
+	scope?: string;
+	/** The skill's reference files, `relPath` relative to its `references/` directory. */
+	references: { relPath: string; content: string }[];
+}
+
 export interface FileRef {
 	skillName: string;
 	absPath: string;

@@ -1,18 +1,18 @@
 /**
- * @fileoverview Flag relative links/images whose target does not exist on disk.
+ * @fileoverview Flag relative links/images whose target does not exist.
  *
  * Skills lean on referenced files for progressive disclosure; a dead relative
  * link means the agent will try to open something that isn't there. Absolute
  * URLs (`https:`, `mailto:`) and pure anchors (`#section`) are ignored.
  */
 
-import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import type { MarkdownRuleDefinition } from "@eslint/markdown";
 
 import { isSkillFile } from "../utils/skill-file";
 import { collectLinkTargets, isRelativeUrl, urlToPath } from "../utils/links";
+import { skillFs } from "../utils/skill-fs";
 
 const rule: MarkdownRuleDefinition<{
 	RuleOptions: [];
@@ -22,7 +22,7 @@ const rule: MarkdownRuleDefinition<{
 		type: "problem",
 		docs: {
 			description:
-				"Flag relative links/images whose target does not exist on disk",
+				"Flag relative links/images whose target does not exist",
 			recommended: true,
 			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-broken-relative-links.md",
 		},
@@ -43,6 +43,8 @@ const rule: MarkdownRuleDefinition<{
 			return {};
 		}
 
+		const fs = skillFs(context.settings);
+
 		return {
 			root(root) {
 				for (const { node, kind, url } of collectLinkTargets(root)) {
@@ -50,7 +52,7 @@ const rule: MarkdownRuleDefinition<{
 						continue;
 					}
 					const target = resolve(baseDir, urlToPath(url));
-					if (!existsSync(target)) {
+					if (!fs.exists(target)) {
 						context.report({
 							loc: node.position,
 							messageId: "broken",
