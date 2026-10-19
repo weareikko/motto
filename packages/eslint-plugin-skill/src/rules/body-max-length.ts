@@ -23,7 +23,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Keep the skill body short to preserve progressive disclosure",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/body-max-length.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/body-max-length.md",
 		},
 		schema: [
 			{

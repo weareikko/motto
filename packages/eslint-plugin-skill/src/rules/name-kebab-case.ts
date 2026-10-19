@@ -23,7 +23,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Require the skill `name` to be a valid Agent Skills identifier",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/name-kebab-case.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/name-kebab-case.md",
 		},
 		schema: [],
 		messages: {

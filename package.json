@@ -5,16 +5,16 @@
   "description": "Tooling for authoring high-quality Claude Code Agent Skills: the motto skill-eval tool + the eslint-plugin-skill hygiene linter.",
   "type": "module",
   "license": "MIT",
-  "author": "ikko-dev",
+  "author": "weareikko",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ikko-dev/motto.git"
+    "url": "git+ssh://git@github.com/weareikko/motto.git"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @ikko-dev/eslint-plugin-skill -w @ikko-dev/motto",
+    "build": "npm run build -w @weareikko/eslint-plugin-skill -w @weareikko/motto",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",

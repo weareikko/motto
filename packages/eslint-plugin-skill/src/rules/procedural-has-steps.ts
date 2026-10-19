@@ -26,7 +26,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Expect a procedural skill's body to contain ordered steps",
 			recommended: false,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/procedural-has-steps.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/procedural-has-steps.md",
 		},
 		schema: [],
 		messages: {

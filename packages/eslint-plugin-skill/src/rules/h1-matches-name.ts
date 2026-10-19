@@ -30,7 +30,7 @@ const rule: MarkdownRuleDefinition<{
 			// requires an H1 nor ties it to `name` (which is a display label).
 			description: "Require the body H1 to correspond to the skill `name`",
 			recommended: false,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/h1-matches-name.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/h1-matches-name.md",
 		},
 		schema: [],
 		messages: {

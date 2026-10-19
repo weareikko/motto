@@ -20,7 +20,7 @@
 
 That is the "measure before enforcing" thesis, arrived at independently by the state-of-the-art tooling. And it requires an **eval harness** — which is precisely why this project built [`evals/`](../../evals/) as a *separate* subsystem from the linter, rather than baking optimization into lint rules.
 
-## Recommendation for `@ikko-dev/eslint-plugin-skill`
+## Recommendation for `@weareikko/eslint-plugin-skill`
 
 **Linter-appropriate** (static, deterministic, behavior-preserving — and matching our own measured findings):
 - Flag known token-inefficient **format** choices with a measured delta: XML/tag-heavy step markup vs. markdown lists (our N=20+ trials: **+23–31% tokens, zero comprehension gain**), prose-vs-table for routers (**−21% tokens, no accuracy change** → already shipped as opt-in `meta-prefers-dispatch-table`).

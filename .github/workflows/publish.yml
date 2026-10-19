@@ -1,7 +1,7 @@
 name: Publish
 
 # Tag scheme: `eslint-plugin-skill@X.Y.Z` publishes that package. Only the
-# eslint-plugin is published today; @ikko-dev/motto is private until Phase B.
+# eslint-plugin is published today; @weareikko/motto is private until Phase B.
 on:
   push:
     tags:
@@ -72,8 +72,8 @@ jobs:
       # No `--provenance`: this repository is private, and npm provenance
       # requires a public source repository. Add it back (plus a
       # `id-token: write` permission) if the repo is ever made public.
-      - name: Publish @ikko-dev/eslint-plugin-skill
-        run: npm publish -w @ikko-dev/eslint-plugin-skill --access public --tag ${{ env.NPM_TAG }}
+      - name: Publish @weareikko/eslint-plugin-skill
+        run: npm publish -w @weareikko/eslint-plugin-skill --access public --tag ${{ env.NPM_TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

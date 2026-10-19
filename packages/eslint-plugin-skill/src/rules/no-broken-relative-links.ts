@@ -24,7 +24,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Flag relative links/images whose target does not exist",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-broken-relative-links.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/no-broken-relative-links.md",
 		},
 		schema: [],
 		messages: {

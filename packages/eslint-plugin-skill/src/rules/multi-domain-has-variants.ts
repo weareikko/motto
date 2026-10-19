@@ -32,7 +32,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Expect a multi-domain skill to carry at least two variant references",
 			recommended: false,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/multi-domain-has-variants.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/multi-domain-has-variants.md",
 		},
 		schema: [],
 		messages: {

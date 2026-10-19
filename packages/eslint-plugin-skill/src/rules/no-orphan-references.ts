@@ -27,7 +27,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Flag reference files not linked from SKILL.md",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-orphan-references.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/no-orphan-references.md",
 		},
 		schema: [],
 		messages: {

@@ -23,7 +23,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Cap the length of the skill `description`",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/description-length.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/description-length.md",
 		},
 		schema: [
 			{
