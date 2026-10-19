@@ -19,16 +19,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",
-    "check": "npm run typecheck && npm test",
-    "changeset": "changeset",
-    "version-packages": "changeset version"
+    "check": "npm run typecheck && npm test"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "@anthropic-ai/tokenizer": "^0.0.4",
-    "@changesets/cli": "^2.29.7",
     "@types/mdast": "^4.0.4",
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",
