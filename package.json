@@ -1,6 +1,6 @@
 {
   "name": "motto",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Tooling for authoring high-quality Claude Code Agent Skills: the motto skill-eval tool + the eslint-plugin-skill hygiene linter.",
   "type": "module",
