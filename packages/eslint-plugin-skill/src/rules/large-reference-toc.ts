@@ -25,7 +25,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Require large reference files to include a table of contents",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/large-reference-toc.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/large-reference-toc.md",
 		},
 		schema: [
 			{

@@ -1,6 +1,6 @@
 # Skill taxonomy & rule design (research-backed)
 
-Status: proposal. Informs the roadmap for `@ikko-dev/eslint-plugin-skill`.
+Status: proposal. Informs the roadmap for `@weareikko/eslint-plugin-skill`.
 
 This document synthesizes a multi-source research pass (Anthropic official docs, the `agentskills.io` open standard, the `anthropics/skills` repo incl. `skill-creator`, community collections, and academic agent-skill/memory literature) into (a) verified findings and (b) a concrete plan for taxonomy-aware rules and cross-skill reference de-duplication.
 
@@ -106,7 +106,7 @@ The spike (P2 below) will benchmark jscpd (+ a hash pass) against the CRO case a
 1. **Dedup scope boundary** — **resolved (PR 3):** default is the plugin dir (parent of the nearest ancestor literally named `skills`), matching sibling skills under one `plugins/<x>/skills/*`. `--scope=repo` opts into comparing every discovered skill in one global scope.
 2. **Type resolution** — **resolved (PR 4):** an explicit `metadata.kind` frontmatter declaration is the *only* signal lint rules act on. `detectKind()` (heuristic auto-detection from disable-model-invocation/allowed-tools/ordered-lists/reference-file-count/cross-skill-links) is exposed as an informative utility but never gates a rule — a wrong guess must never produce a false positive, so type-specific rules stay silent for any skill that hasn't declared its kind.
 3. **Near-duplicate detection** — **resolved (PR 3):** shipped as opt-in (`--near-duplicates` / `{ nearDuplicates: true }`), off by default, using word-shingle Jaccard similarity with a configurable threshold (default 0.75).
-4. **Deliverable form for cross-skill checks** — **resolved (PR 3):** a separate CLI (`skill-check-refs`) + library export (`@ikko-dev/eslint-plugin-skill/dedup`), not an ESLint rule (see the architectural note above) and not a test-runner-shaped audit.
+4. **Deliverable form for cross-skill checks** — **resolved (PR 3):** a separate CLI (`skill-check-refs`) + library export (`@weareikko/eslint-plugin-skill/dedup`), not an ESLint rule (see the architectural note above) and not a test-runner-shaped audit.
 5. **Deliberate-divergence escape hatch** — **resolved (PR 3):** `--ignore=<filename,...>` / `{ ignoreRelPaths: [...] }`, keyed by reference filename.
 
 ## 7. Delivery plan (one PR at a time)

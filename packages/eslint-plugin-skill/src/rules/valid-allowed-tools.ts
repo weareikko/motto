@@ -23,7 +23,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Validate the shape of the optional `allowed-tools` frontmatter field",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/valid-allowed-tools.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/valid-allowed-tools.md",
 		},
 		schema: [],
 		messages: {

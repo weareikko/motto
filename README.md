@@ -4,8 +4,8 @@ Tooling for authoring high-quality [Claude Code Agent Skills](https://code.claud
 
 | Package | What it does | When you run it |
 | --- | --- | --- |
-| [`@ikko-dev/motto`](packages/motto) | **Skill evals** — validate a skill against its own `description` contract: does it trigger when it claims to, do what it claims, at what token cost. Across harnesses (Claude Code / Pi / OpenCode / Codex) and models. | Pre-publish / CI (costs real agent calls) |
-| [`@ikko-dev/eslint-plugin-skill`](packages/eslint-plugin-skill) | **Hygiene linter** — structural correctness (name/dir match, frontmatter, dead/duplicated references) + statically-measured cost nudges. | Every commit (fast, free) |
+| [`@weareikko/motto`](packages/motto) | **Skill evals** — validate a skill against its own `description` contract: does it trigger when it claims to, do what it claims, at what token cost. Across harnesses (Claude Code / Pi / OpenCode / Codex) and models. | Pre-publish / CI (costs real agent calls) |
+| [`@weareikko/eslint-plugin-skill`](packages/eslint-plugin-skill) | **Hygiene linter** — structural correctness (name/dir match, frontmatter, dead/duplicated references) + statically-measured cost nudges. | Every commit (fast, free) |
 
 ## Why two layers
 
@@ -16,8 +16,8 @@ A linter is the `tsc`/`eslint` of skills; evals are the test suite. Our [researc
 ```
 motto/                              (npm-workspaces monorepo)
   packages/
-    motto/                          @ikko-dev/motto            — skill-eval tool (flagship)
-    eslint-plugin-skill/            @ikko-dev/eslint-plugin-skill — hygiene linter
+    motto/                          @weareikko/motto            — skill-eval tool (flagship)
+    eslint-plugin-skill/            @weareikko/eslint-plugin-skill — hygiene linter
   docs/
     research/                       the evidence log behind every rule + the eval design
     design/                         skill taxonomy & rule design

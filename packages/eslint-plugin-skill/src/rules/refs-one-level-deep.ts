@@ -21,7 +21,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Require reference links to stay one level deep from SKILL.md",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/refs-one-level-deep.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/refs-one-level-deep.md",
 		},
 		schema: [],
 		messages: {

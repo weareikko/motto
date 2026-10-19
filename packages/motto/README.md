@@ -1,4 +1,4 @@
-# @ikko-dev/motto
+# @weareikko/motto
 
 Evaluate a [Claude Code Agent Skill](https://docs.claude.com/en/docs/claude-code/skills) against **its own `description` contract**. A skill's frontmatter `description` is the only machine-readable promise it makes — what it does, and when to use it. `motto` reads that promise and tests it: does the skill *trigger* when it says it will, *do* what it claims, and at what *token cost*?
 
@@ -25,7 +25,7 @@ behavioral (trigger + claim fidelity)
 ## Install
 
 ```sh
-npm i -g @ikko-dev/motto   # (not yet published — see Status)
+npm i -g @weareikko/motto   # (not yet published — see Status)
 ```
 
 ## Commands
@@ -64,7 +64,7 @@ Cost and contract derivation are deterministic (no model, no spend). Behavioral 
 
 ## Credentials
 
-Behavioral metrics run on real agent CLIs and an LLM judge. Copy [`.env.example`](../../.env.example) to `.env` (gitignored, auto-loaded). Each harness gates on its own binary + a provider key; the judge uses the Cloudflare AI Gateway three-var convention (`CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_GATEWAY_ID`, + optional `EVAL_JUDGE_MODEL`) shared with the other @ikko-dev projects.
+Behavioral metrics run on real agent CLIs and an LLM judge. Copy [`.env.example`](../../.env.example) to `.env` (gitignored, auto-loaded). Each harness gates on its own binary + a provider key; the judge uses the Cloudflare AI Gateway three-var convention (`CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_GATEWAY_ID`, + optional `EVAL_JUDGE_MODEL`) shared with the other @weareikko projects.
 
 ## Multi-harness eval library
 

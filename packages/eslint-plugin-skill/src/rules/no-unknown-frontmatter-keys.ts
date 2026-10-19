@@ -40,7 +40,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Flag unknown top-level frontmatter keys on a skill",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/no-unknown-frontmatter-keys.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/no-unknown-frontmatter-keys.md",
 		},
 		schema: [
 			{

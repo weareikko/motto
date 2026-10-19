@@ -30,7 +30,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Expect a reference skill to carry at least one reference file",
 			recommended: false,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/reference-has-content.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/reference-has-content.md",
 		},
 		schema: [],
 		messages: {

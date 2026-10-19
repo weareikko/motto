@@ -31,7 +31,7 @@ const rule: MarkdownRuleDefinition<{
 			description:
 				"Suggest a markdown table for a meta/router skill's dispatch list",
 			recommended: false,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/meta-prefers-dispatch-table.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/meta-prefers-dispatch-table.md",
 		},
 		schema: [],
 		messages: {

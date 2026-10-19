@@ -1,5 +1,5 @@
 {
-  "name": "@ikko-dev/motto",
+  "name": "@weareikko/motto",
   "version": "0.1.0",
   "private": true,
   "description": "Skill-eval tool: validate a Claude Code Agent Skill against its own description contract — trigger fidelity, claim fidelity, and token cost — across harnesses and models.",
@@ -12,15 +12,15 @@
     "evals",
     "llm"
   ],
-  "homepage": "https://github.com/ikko-dev/motto/tree/main/packages/motto#readme",
+  "homepage": "https://github.com/weareikko/motto/tree/main/packages/motto#readme",
   "bugs": {
-    "url": "https://github.com/ikko-dev/motto/issues"
+    "url": "https://github.com/weareikko/motto/issues"
   },
   "license": "MIT",
-  "author": "ikko-dev",
+  "author": "weareikko",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ikko-dev/motto.git",
+    "url": "git+ssh://git@github.com/weareikko/motto.git",
     "directory": "packages/motto"
   },
   "type": "module",

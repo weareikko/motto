@@ -12,7 +12,7 @@ Reference files are meant to live one level below their own `SKILL.md` (see [`re
 ## Usage
 
 ```sh
-npx @ikko-dev/eslint-plugin-skill skill-check-refs [root] [options]
+npx @weareikko/eslint-plugin-skill skill-check-refs [root] [options]
 ```
 
 (Or, once installed as a dependency, just `skill-check-refs`.)
@@ -49,7 +49,7 @@ skill-check-refs . --ignore=output-template.md
 ## Library usage
 
 ```ts
-import { analyzeReferences, formatReport } from "@ikko-dev/eslint-plugin-skill/dedup";
+import { analyzeReferences, formatReport } from "@weareikko/eslint-plugin-skill/dedup";
 
 const result = analyzeReferences("./plugins/cro");
 console.log(formatReport(result));

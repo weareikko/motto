@@ -1,5 +1,5 @@
 /**
- * @ikko-dev/eslint-plugin-skill — lint Claude Code Agent Skills (`SKILL.md`).
+ * @weareikko/eslint-plugin-skill — lint Claude Code Agent Skills (`SKILL.md`).
  *
  * The plugin exposes a set of rules plus two ready-to-use flat configs. Each
  * config is self-contained: it targets `**​/SKILL.md`, wires up the

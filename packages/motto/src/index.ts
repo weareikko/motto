@@ -1,5 +1,5 @@
 /**
- * @ikko-dev/motto — skill-eval tooling.
+ * @weareikko/motto — skill-eval tooling.
  *
  * Public library surface (the `motto` CLI is added in Phase B). Re-exports the
  * multi-harness runner, harness adapters, judge, and config so evals and future

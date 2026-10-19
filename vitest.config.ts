@@ -6,7 +6,7 @@ import { defineConfig } from "vitest/config";
 // live inside each project config — a top-level `define` does not propagate
 // into `projects`.
 const define = {
-	__PKG_NAME__: JSON.stringify("@ikko-dev/eslint-plugin-skill"),
+	__PKG_NAME__: JSON.stringify("@weareikko/eslint-plugin-skill"),
 	__PKG_VERSION__: JSON.stringify("0.0.0-test"),
 };
 

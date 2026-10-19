@@ -24,7 +24,7 @@ const rule: MarkdownRuleDefinition<{ RuleOptions: []; MessageIds: MessageIds }> 
 				description:
 					"Require `name` and `description` frontmatter on a skill",
 				recommended: true,
-				url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/require-frontmatter.md",
+				url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/require-frontmatter.md",
 			},
 			schema: [],
 			messages: {

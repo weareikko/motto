@@ -1,7 +1,7 @@
 /**
  * LLM judge for evals, routed through Cloudflare AI Gateway.
  *
- * Uses the same three-var convention as the other @ikko-dev projects
+ * Uses the same three-var convention as the other @weareikko projects
  * (gitlab-review, c24n): `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` +
  * `CLOUDFLARE_GATEWAY_ID`. Dependency-free — a direct call to the gateway's
  * OpenAI-compatible endpoint, so evals don't pull a provider SDK. The judge

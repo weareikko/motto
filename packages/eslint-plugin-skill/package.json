@@ -1,5 +1,5 @@
 {
-  "name": "@ikko-dev/eslint-plugin-skill",
+  "name": "@weareikko/eslint-plugin-skill",
   "version": "0.1.0",
   "description": "ESLint plugin that lints Claude Code Agent Skills (SKILL.md) for quality — portable to oxlint.",
   "keywords": [
@@ -13,15 +13,15 @@
     "skill",
     "markdown"
   ],
-  "homepage": "https://github.com/ikko-dev/motto/tree/main/packages/eslint-plugin-skill#readme",
+  "homepage": "https://github.com/weareikko/motto/tree/main/packages/eslint-plugin-skill#readme",
   "bugs": {
-    "url": "https://github.com/ikko-dev/motto/issues"
+    "url": "https://github.com/weareikko/motto/issues"
   },
   "license": "MIT",
-  "author": "ikko-dev",
+  "author": "weareikko",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ikko-dev/motto.git",
+    "url": "git+ssh://git@github.com/weareikko/motto.git",
     "directory": "packages/eslint-plugin-skill"
   },
   "type": "module",

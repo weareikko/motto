@@ -1,11 +1,13 @@
-# @ikko-dev/eslint-plugin-skill
+# @weareikko/eslint-plugin-skill
 
-[![NPM Version](https://img.shields.io/npm/v/@ikko-dev/eslint-plugin-skill.svg?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@ikko-dev/eslint-plugin-skill/)
-[![Downloads](https://img.shields.io/npm/dm/@ikko-dev/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@ikko-dev/eslint-plugin-skill/)
-[![Size](https://img.shields.io/bundlephobia/minzip/@ikko-dev/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853&label=size)](https://bundlephobia.com/package/@ikko-dev/eslint-plugin-skill)
-![Codecov](https://img.shields.io/codecov/c/github/ikko-dev/motto?style=flat&colorB=3e63dd&colorA=414853)
+[![NPM Version](https://img.shields.io/npm/v/@weareikko/eslint-plugin-skill.svg?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@weareikko/eslint-plugin-skill/)
+[![Downloads](https://img.shields.io/npm/dm/@weareikko/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@weareikko/eslint-plugin-skill/)
+[![Size](https://img.shields.io/bundlephobia/minzip/@weareikko/eslint-plugin-skill?style=flat&colorB=3e63dd&colorA=414853&label=size)](https://bundlephobia.com/package/@weareikko/eslint-plugin-skill)
+![Codecov](https://img.shields.io/codecov/c/github/weareikko/motto?style=flat&colorB=3e63dd&colorA=414853)
 
 An ESLint plugin that lints [Claude Code Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) (`SKILL.md` files) for quality.
+
+> This package moved from `@ikko-dev/eslint-plugin-skill` to `@weareikko/eslint-plugin-skill`. The old package (last version 0.0.1) will be deprecated: install `@weareikko/eslint-plugin-skill` instead.
 
 ## Rules
 
@@ -71,7 +73,7 @@ A skill can declare what *kind* it is via `metadata.kind` in frontmatter (`proce
 ## Install
 
 ```sh
-npm install --save-dev eslint @ikko-dev/eslint-plugin-skill
+npm install --save-dev eslint @weareikko/eslint-plugin-skill
 ```
 
 ## Usage
@@ -79,7 +81,7 @@ npm install --save-dev eslint @ikko-dev/eslint-plugin-skill
 Add a flat config at the root of your skills repo (`eslint.config.js`):
 
 ```js
-import skill from "@ikko-dev/eslint-plugin-skill";
+import skill from "@weareikko/eslint-plugin-skill";
 
 export default [skill.configs.recommended];
 ```
@@ -97,7 +99,7 @@ A ready-to-copy config lives in [`configs/eslint.config.example.js`](configs/esl
 Rules with options can be tuned:
 
 ```js
-import skill from "@ikko-dev/eslint-plugin-skill";
+import skill from "@weareikko/eslint-plugin-skill";
 
 export default [
   skill.configs.recommended,
@@ -131,7 +133,7 @@ A host that keeps its skills off disk (a database, a remote store) lints them wi
 
 ```js
 import { Linter } from "eslint";
-import skill from "@ikko-dev/eslint-plugin-skill";
+import skill from "@weareikko/eslint-plugin-skill";
 
 const files = {
 	"/skills/demo/SKILL.md": skillMd,
@@ -145,10 +147,10 @@ const messages = new Linter({ cwd: "/skills" }).verify(
 );
 ```
 
-The cross-skill analysis has the same in-memory entry point, `analyzeSkills` from `@ikko-dev/eslint-plugin-skill/dedup`:
+The cross-skill analysis has the same in-memory entry point, `analyzeSkills` from `@weareikko/eslint-plugin-skill/dedup`:
 
 ```js
-import { analyzeSkills } from "@ikko-dev/eslint-plugin-skill/dedup";
+import { analyzeSkills } from "@weareikko/eslint-plugin-skill/dedup";
 
 const { duplicates, divergences } = analyzeSkills([
 	{ name: "skill-a", references: [{ relPath: "tone.md", content: toneA }] },

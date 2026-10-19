@@ -8,7 +8,7 @@
 // language with YAML frontmatter, and enables the rule set. Swap it for
 // `skill.configs.strict` to fail CI on quality warnings too.
 
-import skill from "@ikko-dev/eslint-plugin-skill";
+import skill from "@weareikko/eslint-plugin-skill";
 
 export default [
 	skill.configs.recommended,

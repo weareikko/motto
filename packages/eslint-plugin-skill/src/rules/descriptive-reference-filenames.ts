@@ -27,7 +27,7 @@ const rule: MarkdownRuleDefinition<{
 		docs: {
 			description: "Require reference files to have descriptive names",
 			recommended: true,
-			url: "https://github.com/ikko-dev/eslint-plugin-skill/blob/main/docs/rules/descriptive-reference-filenames.md",
+			url: "https://github.com/weareikko/motto/blob/main/packages/eslint-plugin-skill/docs/rules/descriptive-reference-filenames.md",
 		},
 		schema: [],
 		messages: {

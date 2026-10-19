@@ -1,6 +1,6 @@
 # Research log
 
-This directory is the evidence base behind `@ikko-dev/eslint-plugin-skill`'s rules. The project's goal is to make skill authoring choices **measured, not assumed** — every entry here follows the same shape:
+This directory is the evidence base behind `@weareikko/eslint-plugin-skill`'s rules. The project's goal is to make skill authoring choices **measured, not assumed** — every entry here follows the same shape:
 
 1. **Question** — a concrete, falsifiable claim about how to write skills better (for comprehension, cost, or token efficiency).
 2. **Evidence** — documented guidance (Anthropic's official docs, the Agent Skills spec) and/or a direct empirical test (blind trials with fresh agent instances, real token counts).
