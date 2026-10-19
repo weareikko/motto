@@ -14,6 +14,7 @@ import type { MarkdownRuleDefinition } from "@eslint/markdown";
 import { isSkillFile } from "../utils/skill-file";
 import { collectLinkTargets, isRelativeUrl, urlToPath } from "../utils/links";
 import { referenceMarkdownFiles } from "../utils/references";
+import { skillFs } from "../utils/skill-fs";
 
 const TOP = { start: { line: 1, column: 1 }, end: { line: 1, column: 1 } };
 
@@ -40,7 +41,7 @@ const rule: MarkdownRuleDefinition<{
 			return {};
 		}
 		const skillDir = dirname(context.filename);
-		const files = referenceMarkdownFiles(skillDir);
+		const files = referenceMarkdownFiles(skillDir, skillFs(context.settings));
 		if (!skillDir || skillDir === "." || context.filename === "<input>" || files.length === 0) {
 			return {};
 		}

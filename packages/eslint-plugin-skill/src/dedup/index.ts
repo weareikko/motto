@@ -1,4 +1,4 @@
-export { analyzeReferences } from "./analyze";
+export { analyzeReferences, analyzeSkills } from "./analyze";
 export { formatReport } from "./report";
 export type {
 	AnalyzeOptions,
@@ -7,4 +7,5 @@ export type {
 	DuplicateFinding,
 	Finding,
 	NearDuplicateFinding,
+	SkillReferences,
 } from "./types";

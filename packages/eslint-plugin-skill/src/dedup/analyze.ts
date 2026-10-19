@@ -18,7 +18,7 @@
 import { resolve } from "node:path";
 
 import { findSkillDirs, referenceFilesFor, scopeKeyFor } from "./discover";
-import { similarity } from "./hash";
+import { hashContent, similarity } from "./hash";
 import type {
 	AnalyzeOptions,
 	AnalyzeResult,
@@ -26,9 +26,11 @@ import type {
 	DuplicateFinding,
 	NearDuplicateFinding,
 	ReferenceFile,
+	SkillReferences,
 } from "./types";
 
 const DEFAULT_NEAR_DUPLICATE_THRESHOLD = 0.75;
+const DEFAULT_MEMORY_SCOPE = "skills";
 
 export function analyzeReferences(
 	root: string,
@@ -36,22 +38,70 @@ export function analyzeReferences(
 ): AnalyzeResult {
 	const absRoot = resolve(root);
 	const scopeStrategy = options.scope ?? "plugin";
-	const ignore = new Set(options.ignoreRelPaths ?? []);
 
-	const skillDirs = findSkillDirs(absRoot);
 	const scopes = new Map<string, ReferenceFile[]>();
-	for (const skillDir of skillDirs) {
+	for (const skillDir of findSkillDirs(absRoot)) {
 		const scope = scopeStrategy === "repo" ? absRoot : scopeKeyFor(skillDir, absRoot);
-		const files = referenceFilesFor(skillDir).filter(
-			(f) => !ignore.has(f.relPath),
-		);
-		if (files.length === 0) {
-			continue;
-		}
-		const bucket = scopes.get(scope) ?? [];
-		bucket.push(...files);
-		scopes.set(scope, bucket);
+		addToScope(scopes, scope, referenceFilesFor(skillDir));
 	}
+
+	return classify(scopes, options);
+}
+
+/**
+ * The same analysis over skills held in memory (a database, a remote store),
+ * for hosts that never write their skills to disk. Each skill is compared
+ * within its `scope` (default: one scope for every skill passed). A file's
+ * `absPath` in the findings is `<name>/references/<relPath>`.
+ */
+export function analyzeSkills(
+	skills: SkillReferences[],
+	options: Omit<AnalyzeOptions, "scope"> = {},
+): AnalyzeResult {
+	const scopes = new Map<string, ReferenceFile[]>();
+	for (const skill of skills) {
+		addToScope(
+			scopes,
+			skill.scope ?? DEFAULT_MEMORY_SCOPE,
+			skill.references.map(({ relPath, content }) => ({
+				skillName: skill.name,
+				skillDir: skill.name,
+				relPath,
+				absPath: `${skill.name}/references/${relPath}`,
+				hash: hashContent(content),
+				raw: content,
+			})),
+		);
+	}
+
+	return classify(scopes, options);
+}
+
+function addToScope(
+	scopes: Map<string, ReferenceFile[]>,
+	scope: string,
+	files: ReferenceFile[],
+): void {
+	if (files.length === 0) {
+		return;
+	}
+	const bucket = scopes.get(scope) ?? [];
+	bucket.push(...files);
+	scopes.set(scope, bucket);
+}
+
+/** Classify every scope's reference files into duplicates, divergences and near-duplicates. */
+function classify(
+	allScopes: Map<string, ReferenceFile[]>,
+	options: Omit<AnalyzeOptions, "scope">,
+): AnalyzeResult {
+	const ignore = new Set(options.ignoreRelPaths ?? []);
+	const scopes = new Map(
+		[...allScopes].map(([scope, files]) => [
+			scope,
+			files.filter((f) => !ignore.has(f.relPath)),
+		]),
+	);
 
 	const duplicates: DuplicateFinding[] = [];
 	const divergences: DivergenceFinding[] = [];

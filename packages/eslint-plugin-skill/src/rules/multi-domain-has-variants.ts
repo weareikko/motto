@@ -17,6 +17,7 @@ import { parseFrontmatter } from "../utils/frontmatter";
 import { findFrontmatter } from "../utils/ast";
 import { declaredKind } from "../utils/kind";
 import { referenceMarkdownFiles } from "../utils/references";
+import { skillFs } from "../utils/skill-fs";
 
 const TOP = { start: { line: 1, column: 1 }, end: { line: 1, column: 1 } };
 const MIN_VARIANTS = 2;
@@ -59,7 +60,7 @@ const rule: MarkdownRuleDefinition<{
 				if (declaredKind(data) !== "multi-domain") {
 					return;
 				}
-				if (referenceMarkdownFiles(skillDir).length < MIN_VARIANTS) {
+				if (referenceMarkdownFiles(skillDir, skillFs(context.settings)).length < MIN_VARIANTS) {
 					context.report({
 						loc: TOP,
 						messageId: "tooFewVariants",
