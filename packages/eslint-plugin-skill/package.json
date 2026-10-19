@@ -38,7 +38,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "skill-check-refs": "./dist/dedup/cli.js"
+    "skill-check-refs": "dist/dedup/cli.js"
   },
   "files": [
     "dist",
