@@ -104,12 +104,11 @@ jobs:
           npm run build -w @weareikko/eslint-plugin-skill
 
       # Trusted publishing (OIDC): no npm token. A prerelease goes to `next`.
-      # No provenance: this repository is private, and npm provenance needs a
-      # public source repository. Set `provenance: true` if it becomes public.
+      # Provenance needs a public source repository, which this one is.
       - name: Publish @weareikko/eslint-plugin-skill
         uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: packages/eslint-plugin-skill
           access: public
-          provenance: false
+          provenance: true
           tag: ${{ needs.release.outputs.dist-tag }}
