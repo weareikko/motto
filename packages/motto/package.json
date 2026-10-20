@@ -1,7 +1,7 @@
 {
   "name": "@weareikko/motto",
-  "version": "0.1.1",
-  "description": "Skill-eval tool: validate a Claude Code Agent Skill against its own description contract \u2014 trigger fidelity, claim fidelity, and token cost \u2014 across harnesses and models.",
+  "version": "0.1.2",
+  "description": "Skill-eval tool: validate a Claude Code Agent Skill against its own description contract — trigger fidelity, claim fidelity, and token cost — across harnesses and models.",
   "keywords": [
     "claude",
     "claude-code",
