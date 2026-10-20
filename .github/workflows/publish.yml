@@ -2,7 +2,7 @@ name: Publish
 
 # Each merge into main releases what its fragments describe. A manual run
 # (`gh workflow run publish.yml -f version=major`) forces a bump.
-# Only @weareikko/eslint-plugin-skill is published: @weareikko/motto is private.
+# Publishes @weareikko/eslint-plugin-skill and @weareikko/motto.
 # npm trusted publishing is bound to this file name: keep the publish job here.
 on:
   push:
@@ -101,7 +101,7 @@ jobs:
       - name: Install and build
         run: |
           npm ci
-          npm run build -w @weareikko/eslint-plugin-skill
+          npm run build
 
       # Trusted publishing (OIDC): no npm token. A prerelease goes to `next`.
       # Provenance needs a public source repository, which this one is.
@@ -109,6 +109,14 @@ jobs:
         uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
         with:
           package: packages/eslint-plugin-skill
+          access: public
+          provenance: true
+          tag: ${{ needs.release.outputs.dist-tag }}
+
+      - name: Publish @weareikko/motto
+        uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4.1.5
+        with:
+          package: packages/motto
           access: public
           provenance: true
           tag: ${{ needs.release.outputs.dist-tag }}

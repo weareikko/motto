@@ -25,7 +25,7 @@ behavioral (trigger + claim fidelity)
 ## Install
 
 ```sh
-npm i -g @weareikko/motto   # (not yet published — see Status)
+npm i -g @weareikko/motto
 ```
 
 ## Commands
@@ -83,6 +83,6 @@ RUN_EVALS=1 EVAL_MODELS="claude=claude-opus-4-8,pi=anthropic/claude-sonnet-5" np
 
 ## Status
 
-Cost + contract derivation ship and are fully tested (deterministic, no spend). The behavioral runner (`trigger`/`claim` fidelity) is structurally complete and gated, but its live `filesRead`/judge wiring has **not** been validated end-to-end against real harness output — treat first live numbers as suspect until confirmed. Contract derivation is deterministic/templated for the MVP; a `--generate` mode (model-authored natural prompts + adjacent-out-of-scope negatives) is planned. Package stays unpublished (`private: true`) until behavioral metrics are validated on live runs.
+Cost + contract derivation ship and are fully tested (deterministic, no spend). The behavioral runner (`trigger`/`claim` fidelity) is structurally complete and gated, but its live `filesRead`/judge wiring has **not** been validated end-to-end against real harness output — treat first live numbers as suspect until confirmed. Contract derivation is deterministic/templated for the MVP; a `--generate` mode (model-authored natural prompts + adjacent-out-of-scope negatives) is planned.
 
 Its changes go in the root [`CHANGELOG.md`](../../CHANGELOG.md) through `.changelog/` fragments, like those of `@weareikko/eslint-plugin-skill` (see [CONTRIBUTING.md](../../CONTRIBUTING.md#changelog-and-releases)).
